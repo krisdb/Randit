@@ -1,15 +1,13 @@
 package com.qualcode.randit.fragments;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.ListFragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.qualcode.randit.R;
@@ -18,10 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class PostListFragment extends ListFragment {
+public class PostListFragment extends Fragment {
     private Activity activity;
-    private static CustomAdapter adapter = null;
-    private ListView mListView;
+    protected RecyclerView mRecyclerView;
+    protected LinearLayoutManager mLinearLayoutManager;
 
     public static PostListFragment init(String subreddit) {
         PostListFragment plf = new PostListFragment();
@@ -31,16 +29,6 @@ public class PostListFragment extends ListFragment {
         return plf;
     }
 
-    public static PostListFragment newInstance(String subreddit) {
-
-        PostListFragment lf = new PostListFragment();
-        Bundle bundle = new Bundle();
-        bundle.putString("subreddit", subreddit);
-        lf.setArguments(bundle);
-
-        return lf;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,22 +36,27 @@ public class PostListFragment extends ListFragment {
         setHasOptionsMenu(true);
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         setRetainInstance(true);
 
         final View listingView = inflater.inflate(R.layout.postlist, container, false);
+        ((TextView)listingView.findViewById(R.id.subreddit)).setText(getArguments().getString("subreddit"));
 
-        ((TextView)listingView.findViewById(R.id.subreddit)).setText( getArguments().getString("subreddit"));
+        mRecyclerView = (RecyclerView) listingView.findViewById(R.id.postlist);
 
-        adapter = new CustomAdapter();
-        //adapter.addItem(item);
+        LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(activity);
+        mRecyclerView.setLayoutManager(mLinearLayoutManager);
 
-        this.setListAdapter(adapter);
+        List<String> posts = new ArrayList<>();
+        posts.add("Title 1");
+        posts.add("Title 2");
+        posts.add("Title 3");
+        posts.add("Title 4");
 
-        adapter.notifyDataSetChanged();
+        CustomRecyclerViewAdapter adapter = new CustomRecyclerViewAdapter(posts);
+        mRecyclerView.setAdapter(adapter);
 
         return listingView;
     }
@@ -72,79 +65,48 @@ public class PostListFragment extends ListFragment {
     public void onActivityCreated(final Bundle icicle) {
         super.onActivityCreated(icicle);
         activity = getActivity();
-
-
     }
 
-    @Override
-    public void onResume()
-    {
-        super.onResume();
+    public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecyclerViewAdapter.PostListViewHolder>{
 
-        activity = getActivity();
-        mListView = getListView();
-}
+        List<String> mPosts;
 
-
-
-    /* ADAPTER */
-    private class CustomAdapter extends BaseAdapter
-    {
-        private final List<String> bookmarks = new ArrayList<>();
-        private final LayoutInflater mInflater;
-
-        public CustomAdapter() {
-            mInflater = (LayoutInflater)activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        }
-
-        public void addItem(String bookmark) {
-            bookmarks.add(bookmark);
-        }
-
-        @Override
-        public int getCount() {
-            return bookmarks.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return bookmarks.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(final int position, View convertView, final ViewGroup parent)
+        public CustomRecyclerViewAdapter(List<String> posts)
         {
-            final ViewHolder holder;
-            final String bookmark = (String)getItem(position);
-
-            if (convertView == null)
-            {
-                holder = new ViewHolder();
-
-                //convertView = mInflater.inflate(R.layout.bookmark_list_item, null);
-                //holder.bookmark_item_title = (TextView)convertView.findViewById(R.id.bookmark_item_title);
-                //holder.bookmark_item_favicon = (ImageView)convertView.findViewById(R.id.bookmark_item_favicon);
-
-                convertView.setTag(holder);
-            }
-            else
-                holder = (ViewHolder)convertView.getTag();
-
-            //holder.bookmark_item_title.setText(bookmark.getTitle());
-
-            //holder.bookmark_item_favicon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.icon_bookmark));
-
-            return convertView;
+            mPosts = posts;
         }
-    }
 
-    static class ViewHolder {
-        TextView bookmark_item_title;
+        @Override
+        public int getItemCount() {
+            return mPosts.size();
+        }
+
+        @Override
+        public PostListViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+            View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.postlist_item, viewGroup, false);
+            PostListViewHolder cvh = new PostListViewHolder(v);
+            return cvh;
+        }
+
+        @Override
+        public void onBindViewHolder(PostListViewHolder personViewHolder, int i) {
+            personViewHolder.title.setText(mPosts.get(i));
+        }
+
+        @Override
+        public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+            super.onAttachedToRecyclerView(recyclerView);
+        }
+
+        public class PostListViewHolder extends RecyclerView.ViewHolder {
+            TextView title;
+
+            PostListViewHolder(View itemView) {
+                super(itemView);
+                title = (TextView)itemView.findViewById(R.id.title);
+            }
+        }
+
     }
-   /* ADAPTER */
 }
+
