@@ -1,77 +1,130 @@
 package com.qualcode.randit.activities;
 
-import android.content.Intent;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.ViewPager;
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
-
 import com.qualcode.randit.R;
-    import com.qualcode.randit.fragments.PostListFragment;
-
+import com.qualcode.randit.classes.PostListRecyclerViewAdapter;
+import com.qualcode.randit.common.Utilities;
+import com.qualcode.randit.models.RedditPost;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Main extends AppCompatActivity {
-    public ViewPager mViewPager;
-    public MyFragmentPagerAdapter mMyFragmentPagerAdapter;
-    private static List<String> mSubreddits = new ArrayList<String>();
-    private static int NUMBER_OF_PAGES;
+public class Main extends AppCompatActivity  {
+    protected RecyclerView mRecyclerView;
+    private List<RedditPost> mPosts = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        mSubreddits.add("all");
-        mSubreddits.add("nba");
-        mSubreddits.add("hearthstone");
-        mSubreddits.add("heroesofthestorm");
-        mSubreddits.add("android");
+        mRecyclerView = (RecyclerView)findViewById(R.id.postlist);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        mViewPager = (ViewPager)findViewById(R.id.pager);
-
-        NUMBER_OF_PAGES = mSubreddits.size();
-
-        mMyFragmentPagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
-        mViewPager.setAdapter(mMyFragmentPagerAdapter);
-        mViewPager.setCurrentItem(0);
+        new GetPosts(this).execute();
     }
 
-    private static class MyFragmentPagerAdapter extends FragmentStatePagerAdapter {
+    public class GetPosts extends AsyncTask<Void, Void, String> {
+        private ProgressDialog dialog;
+        private Activity activity;
 
-        public MyFragmentPagerAdapter(FragmentManager fm) {
-            super(fm);
+        public GetPosts(final Activity activity) {
+            this.activity = activity;
+            this.dialog = new ProgressDialog(activity);
+            this.dialog.setTitle(R.string.app_name);
+            this.dialog.setMessage("Searching...");
+
+            if (!this.dialog.isShowing())
+                this.dialog.show();
         }
 
         @Override
-        public android.support.v4.app.Fragment getItem(int position) {
-            return PostListFragment.init(mSubreddits.get(position));
-        }
+        protected String doInBackground(Void... params) {
 
+            String subreddit = GetRandomSubreddit();
+            GetPosts(subreddit);
+
+            return subreddit;
+        }
 
         @Override
-        public int getCount() {
-            return NUMBER_OF_PAGES;
+        protected void onPostExecute(final String subreddit) {
+
+            if (this.dialog.isShowing())
+                this.dialog.dismiss();
+
+            setTitle("r/".concat(subreddit.toLowerCase()));
+
+            final PostListRecyclerViewAdapter adapter = new PostListRecyclerViewAdapter(mPosts);
+            mRecyclerView.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+
         }
     }
 
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    private void GetPosts(final String subreddit)
+    {
+        if (subreddit == null) return;
+
+        String json = Utilities.GetRemoteJSON("http://www.reddit.com/r/".concat(subreddit).concat("/.json"));
+
+        try {
+            JSONObject response = new JSONObject(json);
+            JSONObject data = response.getJSONObject("data");
+            JSONArray posts = data.getJSONArray("children");
+
+            for (int i = 0; i < posts.length(); i++) {
+                JSONObject topic = posts.getJSONObject(i).getJSONObject("data");
+
+                String author = topic.getString("author");
+                String imageUrl = topic.getString("thumbnail");
+                String postTime = topic.getString("created_utc");
+                String score = topic.getString("score");
+                String title = topic.getString("title");
+
+                mPosts.add(new RedditPost(title, author, Integer.valueOf(score)));
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
-    @Override
-    protected void onSaveInstanceState(final Bundle outState) {
-        // super.onSaveInstanceState(outState);
+    private String GetRandomSubreddit()
+    {
+        String json = Utilities.GetRemoteJSON("http://www.reddit.com/r/random/.json");
+
+        JSONObject obj = null;
+
+        try {
+            obj = new JSONObject(json);
+            JSONObject data1 = (JSONObject) obj.get("data");
+
+            JSONArray children = (JSONArray) data1.get("children");
+
+            JSONObject jsonObject = (JSONObject) children.get(0);
+            JSONObject data2 = (JSONObject) jsonObject.get("data");
+
+            return data2.getString("subreddit");
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
-
-
-    @Override
-    public void onBackPressed() {
-    }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -82,13 +135,15 @@ public class Main extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            return true;
+        }
+
+        if (id == R.id.action_refresh) {
+            new GetPosts(this).execute();
             return true;
         }
 
