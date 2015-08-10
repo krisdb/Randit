@@ -6,24 +6,88 @@
     android:padding="5dp"
     >
 
-    <TextView  android:id="@+id/title"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        />
+
+    <TextView
+        android:id="@+id/score"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/title"
         android:textStyle="bold"
         />
 
-    <TextView  android:id="@+id/author"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+    <TextView
+        android:text="pts "
+        android:id="@+id/pts"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_below="@id/title"
+        android:layout_toRightOf="@id/score"
         />
 
-    <TextView  android:id="@+id/score"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+    <TextView
+        android:text="by "
+        android:id="@+id/by"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_below="@id/title"
-        android:layout_toRightOf="@id/author"
+        android:layout_toRightOf="@id/pts"
         />
+
+    <TextView
+        android:id="@+id/author"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/title"
+        android:textStyle="bold"
+        android:layout_toRightOf="@id/by"
+        />
+
+    <TextView
+        android:id="@+id/displayDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/title"
+        android:textStyle="bold"
+        android:layout_toRightOf="@id/author"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        />
+
+    <TextView
+        android:text="("
+        android:id="@+id/domainOpenParenthesis"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/title"
+        android:textStyle="bold"
+        android:layout_toRightOf="@id/displayDate"
+        />
+
+    <TextView
+        android:id="@+id/domain"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/title"
+        android:textStyle="bold"
+        android:layout_toRightOf="@id/domainOpenParenthesis"
+        />
+    <TextView
+        android:text=")"
+        android:id="@+id/domainCloseParenthesis"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/title"
+        android:textStyle="bold"
+        android:layout_toRightOf="@id/domain"
+        />
+
 
 </RelativeLayout>

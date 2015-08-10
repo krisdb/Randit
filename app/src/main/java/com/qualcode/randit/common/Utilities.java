@@ -3,22 +3,42 @@ package com.qualcode.randit.common;
 import android.content.Context;
 import android.widget.Toast;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.io.BufferedReader;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 
 public class Utilities {
+
+    public static Date FormatDate(final String date)
+    {
+        return FormatDate(date, "yyyy-MM-dd HH:mm:ss z");
+    }
+
+    public static Date FormatDate(final String date, final String pattern)
+    {
+        final Calendar cal = Calendar.getInstance(TimeZone.getDefault());
+        final SimpleDateFormat format = new SimpleDateFormat(pattern);
+        format.setCalendar(cal);
+
+        try {
+            return format.parse(date);
+        } catch(Throwable t) {
+            return null;
+        }
+    }
+
+    public static String GetDisplayDate(final String date)
+    {
+        final Date itemDateTime = FormatDate(date);
+
+        return android.text.format.DateUtils.getRelativeTimeSpanString(itemDateTime.getTime(), new Date().getTime(), android.text.format.DateUtils.SECOND_IN_MILLIS).toString();
+
+    }
 
     public static void Toast(final Context ctx, final String text)
     {

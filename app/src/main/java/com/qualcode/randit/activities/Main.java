@@ -10,13 +10,15 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import com.qualcode.randit.R;
-import com.qualcode.randit.classes.PostListRecyclerViewAdapter;
+import com.qualcode.randit.adapters.PostListRecyclerViewAdapter;
+import com.qualcode.randit.common.DividerItemDecoration;
 import com.qualcode.randit.common.Utilities;
 import com.qualcode.randit.models.RedditPost;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class Main extends AppCompatActivity  {
@@ -30,6 +32,7 @@ public class Main extends AppCompatActivity  {
 
         mRecyclerView = (RecyclerView)findViewById(R.id.postlist);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(this));
 
         new GetPosts(this).execute();
     }
@@ -68,7 +71,6 @@ public class Main extends AppCompatActivity  {
             final PostListRecyclerViewAdapter adapter = new PostListRecyclerViewAdapter(mPosts);
             mRecyclerView.setAdapter(adapter);
             adapter.notifyDataSetChanged();
-
         }
     }
 
@@ -82,17 +84,22 @@ public class Main extends AppCompatActivity  {
             JSONObject response = new JSONObject(json);
             JSONObject data = response.getJSONObject("data");
             JSONArray posts = data.getJSONArray("children");
+            final int length = posts.length();
 
-            for (int i = 0; i < posts.length(); i++) {
+            for (int i = 0; i < length; i++) {
                 JSONObject topic = posts.getJSONObject(i).getJSONObject("data");
 
+                String url = topic.getString("url");
                 String author = topic.getString("author");
-                String imageUrl = topic.getString("thumbnail");
-                String postTime = topic.getString("created_utc");
-                String score = topic.getString("score");
+                String domain = topic.getString("domain").toLowerCase();
+                Date postDate = Utilities.FormatDate("2012-08-09 12:12:12 GMT");
+                String displayDate = Utilities.GetDisplayDate("2012-08-09 12:12:12 GMT");
+                //Date postDate = Utilities.FormatDate(topic.getString("created_utc"));
+                //String displayDate = Utilities.GetDisplayDate(topic.getString("created_utc"));
+                int score = Integer.valueOf(topic.getString("score"));
                 String title = topic.getString("title");
 
-                mPosts.add(new RedditPost(title, author, Integer.valueOf(score)));
+                mPosts.add(new RedditPost(url, title, author, score, postDate, displayDate, domain));
             }
 
         } catch (JSONException e) {
