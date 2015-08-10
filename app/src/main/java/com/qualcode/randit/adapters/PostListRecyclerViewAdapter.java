@@ -1,6 +1,7 @@
 package com.qualcode.randit.adapters;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -33,13 +34,20 @@ public class PostListRecyclerViewAdapter extends RecyclerView.Adapter<PostListRe
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Intent details = new Intent(v.getContext(), Details.class);
 
-                final Bundle bun = new Bundle();
-                bun.putString("url", mPosts.get(i).getUrl());
-                details.putExtras(bun);
+                if (mPosts.get(i).IsSelf()) {
+                    final Intent details = new Intent(v.getContext(), Details.class);
 
-                v.getContext().startActivity(details);
+                    final Bundle bun = new Bundle();
+                    bun.putString("url", mPosts.get(i).getUrl());
+                    details.putExtras(bun);
+
+                    v.getContext().startActivity(details);
+                }
+                else
+                {
+                    v.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(mPosts.get(i).getUrl())));
+                }
             }
         });
 

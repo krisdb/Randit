@@ -3,6 +3,11 @@ package com.qualcode.randit.common;
 import android.content.Context;
 import android.widget.Toast;
 
+import com.qualcode.randit.models.RedditPost;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -45,7 +50,29 @@ public class Utilities {
         Toast.makeText(ctx, text, Toast.LENGTH_LONG);
     }
 
-    public static String GetRemoteJSON(final String url)
+    public static RedditPost GetPost(final JSONObject obj) {
+        RedditPost post = null;
+        try {
+
+            String url = obj.getString("url");
+            String author = obj.getString("author");
+            String domain = obj.getString("domain").toLowerCase();
+            Date postDate = Utilities.FormatDate("2012-08-09 12:12:12 GMT");
+            String displayDate = Utilities.GetDisplayDate("2012-08-09 12:12:12 GMT");
+            //Date postDate = Utilities.FormatDate(topic.getString("created_utc"));
+            //String displayDate = Utilities.GetDisplayDate(topic.getString("created_utc"));
+            int score = Integer.valueOf(obj.getString("score"));
+            String title = obj.getString("title");
+
+           post = new RedditPost(title, url, author, score, domain, postDate, displayDate);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return post;
+    }
+
+        public static String GetRemoteJSON(final String url)
     {
         URL obj = null;
         try {

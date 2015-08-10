@@ -3,6 +3,7 @@ package com.qualcode.randit.activities;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,12 +19,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class Main extends AppCompatActivity  {
     protected RecyclerView mRecyclerView;
     private List<RedditPost> mPosts = new ArrayList<>();
+    SwipeRefreshLayout mSwipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,10 +35,23 @@ public class Main extends AppCompatActivity  {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(this));
 
+        mSwipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.refeshlayout);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshContent();
+            }
+        });
+
+        refreshContent();
+    }
+
+    private void refreshContent() {
+        mPosts = new ArrayList<>();
         new GetPosts(this).execute();
     }
 
-    public class GetPosts extends AsyncTask<Void, Void, String> {
+        public class GetPosts extends AsyncTask<Void, Void, String> {
         private ProgressDialog dialog;
         private Activity activity;
 
@@ -47,7 +61,7 @@ public class Main extends AppCompatActivity  {
             this.dialog.setTitle(R.string.app_name);
             this.dialog.setMessage("Searching...");
 
-            if (!this.dialog.isShowing())
+            if (this.dialog.isShowing() == false && mSwipeRefreshLayout.isRefreshing() == false)
                 this.dialog.show();
         }
 
@@ -63,14 +77,17 @@ public class Main extends AppCompatActivity  {
         @Override
         protected void onPostExecute(final String subreddit) {
 
-            if (this.dialog.isShowing())
-                this.dialog.dismiss();
-
             setTitle("r/".concat(subreddit.toLowerCase()));
 
             final PostListRecyclerViewAdapter adapter = new PostListRecyclerViewAdapter(mPosts);
             mRecyclerView.setAdapter(adapter);
             adapter.notifyDataSetChanged();
+
+            if (this.dialog.isShowing())
+                this.dialog.dismiss();
+
+            if (mSwipeRefreshLayout.isRefreshing())
+                mSwipeRefreshLayout.setRefreshing(false);
         }
     }
 
@@ -87,26 +104,17 @@ public class Main extends AppCompatActivity  {
             final int length = posts.length();
 
             for (int i = 0; i < length; i++) {
-                JSONObject topic = posts.getJSONObject(i).getJSONObject("data");
+                JSONObject post = posts.getJSONObject(i).getJSONObject("data");
 
-                String url = topic.getString("url");
-                String author = topic.getString("author");
-                String domain = topic.getString("domain").toLowerCase();
-                Date postDate = Utilities.FormatDate("2012-08-09 12:12:12 GMT");
-                String displayDate = Utilities.GetDisplayDate("2012-08-09 12:12:12 GMT");
-                //Date postDate = Utilities.FormatDate(topic.getString("created_utc"));
-                //String displayDate = Utilities.GetDisplayDate(topic.getString("created_utc"));
-                int score = Integer.valueOf(topic.getString("score"));
-                String title = topic.getString("title");
+                RedditPost rp = Utilities.GetPost(post);
+                rp.isSelf = post.getBoolean("is_self");
 
-                mPosts.add(new RedditPost(url, title, author, score, postDate, displayDate, domain));
+                mPosts.add(rp);
             }
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-
     }
 
     private String GetRandomSubreddit()
@@ -135,7 +143,6 @@ public class Main extends AppCompatActivity  {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
@@ -150,7 +157,7 @@ public class Main extends AppCompatActivity  {
         }
 
         if (id == R.id.action_refresh) {
-            new GetPosts(this).execute();
+            refreshContent();
             return true;
         }
 
