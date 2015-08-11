@@ -45,7 +45,6 @@ public class PostListRecyclerViewAdapter extends RecyclerView.Adapter<PostListRe
                 details.putExtras(bun);
 
                 v.getContext().startActivity(details);
-                //v.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(rp.getUrl())));
             }
         });
 
@@ -54,11 +53,16 @@ public class PostListRecyclerViewAdapter extends RecyclerView.Adapter<PostListRe
 
     @Override
     public void onBindViewHolder(PostListViewHolder personViewHolder, int i) {
-        personViewHolder.title.setText(mPosts.get(i).getTitle());
-        personViewHolder.score.setText(String.valueOf(mPosts.get(i).getGetScore()));
-        personViewHolder.displayDate.setText(mPosts.get(i).getDisplayDate());
-        personViewHolder.author.setText(mPosts.get(i).getAuthor());
-        personViewHolder.domain.setText(mPosts.get(i).getDomain());
+        final RedditPost post = mPosts.get(i);
+        personViewHolder.title.setText(post.getTitle());
+        personViewHolder.score.setText(String.valueOf(post.getGetScore()));
+        personViewHolder.displayDate.setText(post.getDisplayDate());
+        personViewHolder.author.setText(post.getAuthor());
+
+        if (post.IsSelf() == false)
+            personViewHolder.domain.setText(post.getDomain());
+        else
+            personViewHolder.domain.setVisibility(View.GONE);
     }
 
 

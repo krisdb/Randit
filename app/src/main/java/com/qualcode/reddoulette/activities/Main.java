@@ -119,7 +119,7 @@ public class Main extends AppCompatActivity  {
     {
         String json = Utilities.GetRemoteJSON("http://www.reddit.com/r/random/.json");
 
-        JSONObject obj = null;
+        JSONObject obj;
 
         try {
             obj = new JSONObject(json);
@@ -150,9 +150,9 @@ public class Main extends AppCompatActivity  {
 
         int id = item.getItemId();
 
-        if (id == R.id.action_settings) {
-            return true;
-        }
+        //if (id == R.id.action_settings) {
+        //return true;
+        //}
 
         if (id == R.id.action_refresh) {
             refreshContent();

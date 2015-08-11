@@ -39,7 +39,10 @@ public class CommentListRecyclerViewAdapter extends RecyclerView.Adapter<Comment
 
     @Override
     public void onBindViewHolder(PostListViewHolder personViewHolder, int i) {
-        personViewHolder.comment.setText(mComments.get(i).getComment());
+        personViewHolder.comment.setText(mComments.get(i).getText());
+        personViewHolder.author.setText(mComments.get(i).getAuthor());
+        personViewHolder.score.setText(String.valueOf(mComments.get(i).getScore()));
+        personViewHolder.displayDate.setText(mComments.get(i).getDisplayDate());
     }
 
 
@@ -49,11 +52,14 @@ public class CommentListRecyclerViewAdapter extends RecyclerView.Adapter<Comment
     }
 
     public class PostListViewHolder extends RecyclerView.ViewHolder {
-        TextView comment;
+        TextView comment, author, score, displayDate;
 
         PostListViewHolder(View itemView) {
             super(itemView);
             comment = (TextView)itemView.findViewById(R.id.comment_text);
+            author = (TextView)itemView.findViewById(R.id.comment_author);
+            score = (TextView)itemView.findViewById(R.id.comment_score);
+            displayDate = (TextView)itemView.findViewById(R.id.comment_displayDate);
         }
     }
 }

@@ -3,27 +3,37 @@ package com.qualcode.reddoulette.models;
 import java.util.Date;
 
 public class RedditComment {
-    public String comment, displayDate;
+    public String text, displayDate, author;
     public int score;
     public Date postDate;
-
 
     public RedditComment()
     {
 
     }
 
-    public RedditComment(String comment, int score, Date postDate, String displayDate)
+    public RedditComment(String text, String author, int score, Date postDate, String displayDate)
     {
-        this.comment = comment;
+        this.text = text;
+        this.author = author;
         this.score = score;
         this.postDate = postDate;
         this.displayDate = displayDate;
     }
 
-    public String getComment()
+    public String getDisplayDate()
     {
-        return comment;
+        return displayDate;
+    }
+
+    public String getAuthor()
+    {
+        return author;
+    }
+
+    public String getText()
+    {
+        return text;
     }
 
     public int getScore()
@@ -31,8 +41,5 @@ public class RedditComment {
         return score;
     }
 
-    public Date getPostDate()
-    {
-        return postDate;
-    }
+    public Date getPostDate() { return postDate;}
 }
