@@ -38,7 +38,7 @@ public class Details extends AppCompatActivity {
             this.url = url;
             this.dialog = new ProgressDialog(activity);
             this.dialog.setTitle(R.string.app_name);
-            this.dialog.setMessage("Fetching    ...");
+            this.dialog.setMessage("Fetching...");
 
             if (!this.dialog.isShowing())
                 this.dialog.show();
@@ -46,7 +46,8 @@ public class Details extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... params) {
-            String json = Utilities.GetRemoteJSON(url.concat("/.json"));
+            url = url.concat(".json");
+            String json = Utilities.GetRemoteJSON(url);
 
             try {
                 JSONObject response = new JSONObject(json);

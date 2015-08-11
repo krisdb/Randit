@@ -79,7 +79,7 @@ public class Main extends AppCompatActivity  {
 
             setTitle("r/".concat(subreddit.toLowerCase()));
 
-            final PostListRecyclerViewAdapter adapter = new PostListRecyclerViewAdapter(mPosts);
+            final PostListRecyclerViewAdapter adapter = new PostListRecyclerViewAdapter(mPosts, mRecyclerView);
             mRecyclerView.setAdapter(adapter);
             adapter.notifyDataSetChanged();
 

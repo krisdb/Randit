@@ -1,5 +1,6 @@
 package com.qualcode.randit.adapters;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -17,9 +18,11 @@ import java.util.List;
 public class PostListRecyclerViewAdapter extends RecyclerView.Adapter<PostListRecyclerViewAdapter.PostListViewHolder> {
 
     List<RedditPost> mPosts;
+    RecyclerView mRecyclerView;
 
-    public PostListRecyclerViewAdapter(List<RedditPost> posts) {
+    public PostListRecyclerViewAdapter(List<RedditPost> posts, RecyclerView rv) {
         mPosts = posts;
+        mRecyclerView = rv;
     }
 
     @Override
@@ -34,19 +37,19 @@ public class PostListRecyclerViewAdapter extends RecyclerView.Adapter<PostListRe
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                int position = mRecyclerView.getChildAdapterPosition(v);
+                RedditPost rp = mPosts.get(position);
 
-                if (mPosts.get(i).IsSelf()) {
+                if (rp.IsSelf()) {
                     final Intent details = new Intent(v.getContext(), Details.class);
 
                     final Bundle bun = new Bundle();
-                    bun.putString("url", mPosts.get(i).getUrl());
+                    bun.putString("url", rp.getUrl());
                     details.putExtras(bun);
 
                     v.getContext().startActivity(details);
-                }
-                else
-                {
-                    v.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(mPosts.get(i).getUrl())));
+                } else {
+                    v.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(rp.getUrl())));
                 }
             }
         });

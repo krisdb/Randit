@@ -39,7 +39,8 @@ public class Utilities {
 
     public static String GetDisplayDate(final String date)
     {
-        final Date itemDateTime = FormatDate(date);
+        final Date itemDateTime = new java.util.Date(Double.valueOf(date).longValue()*1000);
+        //final Date itemDateTime = FormatDate(date);
 
         return android.text.format.DateUtils.getRelativeTimeSpanString(itemDateTime.getTime(), new Date().getTime(), android.text.format.DateUtils.SECOND_IN_MILLIS).toString();
 
@@ -50,19 +51,19 @@ public class Utilities {
         Toast.makeText(ctx, text, Toast.LENGTH_LONG);
     }
 
-    public static RedditPost GetPost(final JSONObject obj) {
+    public static RedditPost GetPost(final JSONObject topic) {
         RedditPost post = null;
         try {
 
-            String url = obj.getString("url");
-            String author = obj.getString("author");
-            String domain = obj.getString("domain").toLowerCase();
-            Date postDate = Utilities.FormatDate("2012-08-09 12:12:12 GMT");
-            String displayDate = Utilities.GetDisplayDate("2012-08-09 12:12:12 GMT");
-            //Date postDate = Utilities.FormatDate(topic.getString("created_utc"));
-            //String displayDate = Utilities.GetDisplayDate(topic.getString("created_utc"));
-            int score = Integer.valueOf(obj.getString("score"));
-            String title = obj.getString("title");
+            String url = topic.getString("url");
+            String author = topic.getString("author");
+            String domain = topic.getString("domain").toLowerCase();
+            //Date postDate = Utilities.FormatDate("2012-08-09 12:12:12 GMT");
+            //String displayDate = Utilities.GetDisplayDate("2012-08-09 12:12:12 GMT");
+            Date postDate = Utilities.FormatDate(topic.getString("created_utc"));
+            String displayDate = Utilities.GetDisplayDate(topic.getString("created_utc"));
+            int score = Integer.valueOf(topic.getString("score"));
+            String title = topic.getString("title");
 
            post = new RedditPost(title, url, author, score, domain, postDate, displayDate);
 
@@ -74,29 +75,27 @@ public class Utilities {
 
         public static String GetRemoteJSON(final String url)
     {
-        URL obj = null;
+        URL obj;
         try {
             obj = new URL(url);
+
             HttpURLConnection con = (HttpURLConnection)obj.openConnection();
-
-            // optional default is GET
             con.setRequestMethod("GET");
-
-            //add request header
             con.setRequestProperty("User-Agent", "Randit");
 
-            int responseCode = con.getResponseCode();
-
             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+
             String inputLine;
             StringBuffer response = new StringBuffer();
 
             while ((inputLine = in.readLine()) != null) {
                 response.append(inputLine);
             }
+
             in.close();
 
-        return response.toString();
+            return response.toString();
+
         } catch (Throwable e) {
             e.printStackTrace();
         }
