@@ -1,4 +1,4 @@
-package com.qualcode.randit.adapters;
+package com.qualcode.reddoulette.adapters;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,9 +9,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import com.qualcode.randit.R;
-import com.qualcode.randit.activities.Details;
-import com.qualcode.randit.models.RedditPost;
+import com.qualcode.reddoulette.R;
+import com.qualcode.reddoulette.activities.Details;
+import com.qualcode.reddoulette.models.RedditPost;
 
 import java.util.List;
 
@@ -37,20 +37,15 @@ public class PostListRecyclerViewAdapter extends RecyclerView.Adapter<PostListRe
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int position = mRecyclerView.getChildAdapterPosition(v);
-                RedditPost rp = mPosts.get(position);
 
-                if (rp.IsSelf()) {
-                    final Intent details = new Intent(v.getContext(), Details.class);
+                final Intent details = new Intent(v.getContext(), Details.class);
 
-                    final Bundle bun = new Bundle();
-                    bun.putString("url", rp.getUrl());
-                    details.putExtras(bun);
+                final Bundle bun = new Bundle();
+                bun.putString("permalink", mPosts.get(mRecyclerView.getChildAdapterPosition(v)).getPermaLink());
+                details.putExtras(bun);
 
-                    v.getContext().startActivity(details);
-                } else {
-                    v.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(rp.getUrl())));
-                }
+                v.getContext().startActivity(details);
+                //v.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(rp.getUrl())));
             }
         });
 

@@ -1,4 +1,4 @@
-package com.qualcode.randit.common;
+package com.qualcode.reddoulette.common;
 
 import android.content.Context;
 import android.content.res.TypedArray;

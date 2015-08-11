@@ -1,4 +1,4 @@
-package com.qualcode.randit.activities;
+package com.qualcode.reddoulette.activities;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -10,11 +10,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
-import com.qualcode.randit.R;
-import com.qualcode.randit.adapters.PostListRecyclerViewAdapter;
-import com.qualcode.randit.common.DividerItemDecoration;
-import com.qualcode.randit.common.Utilities;
-import com.qualcode.randit.models.RedditPost;
+import com.qualcode.reddoulette.R;
+import com.qualcode.reddoulette.adapters.PostListRecyclerViewAdapter;
+import com.qualcode.reddoulette.common.DividerItemDecoration;
+import com.qualcode.reddoulette.common.Utilities;
+import com.qualcode.reddoulette.models.RedditPost;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -53,10 +53,8 @@ public class Main extends AppCompatActivity  {
 
         public class GetPosts extends AsyncTask<Void, Void, String> {
         private ProgressDialog dialog;
-        private Activity activity;
 
         public GetPosts(final Activity activity) {
-            this.activity = activity;
             this.dialog = new ProgressDialog(activity);
             this.dialog.setTitle(R.string.app_name);
             this.dialog.setMessage("Searching...");
@@ -77,7 +75,7 @@ public class Main extends AppCompatActivity  {
         @Override
         protected void onPostExecute(final String subreddit) {
 
-            setTitle("r/".concat(subreddit.toLowerCase()));
+            setTitle(subreddit);
 
             final PostListRecyclerViewAdapter adapter = new PostListRecyclerViewAdapter(mPosts, mRecyclerView);
             mRecyclerView.setAdapter(adapter);
