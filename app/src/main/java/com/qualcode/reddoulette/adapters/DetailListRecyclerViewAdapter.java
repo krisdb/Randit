@@ -1,9 +1,12 @@
 package com.qualcode.reddoulette.adapters;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.qualcode.reddoulette.R;
@@ -57,6 +60,17 @@ public class DetailListRecyclerViewAdapter extends RecyclerView.Adapter<Recycler
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int i) {
 
         if (holder instanceof HeaderViewHolder) {
+            if (mObjects.get(0).getPost().IsSelf() == false)
+            {
+                ((HeaderViewHolder)holder).postHeaderLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        v.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(mObjects.get(0).getPost().getUrl())));
+
+                    }
+                });
+            }
+
             ((HeaderViewHolder)holder).postTitle.setText(mObjects.get(0).getPost().getTitle());
             ((HeaderViewHolder)holder).postAuthor.setText(mObjects.get(0).getPost().getAuthor());
             ((HeaderViewHolder)holder).postScore.setText(String.valueOf(mObjects.get(0).getPost().getScore()));
@@ -79,6 +93,7 @@ public class DetailListRecyclerViewAdapter extends RecyclerView.Adapter<Recycler
 
     public class HeaderViewHolder extends RecyclerView.ViewHolder {
         TextView postTitle, postAuthor, postScore, postDisplayDate;
+        RelativeLayout postHeaderLayout;
 
         HeaderViewHolder(View itemView) {
             super(itemView);
@@ -86,6 +101,7 @@ public class DetailListRecyclerViewAdapter extends RecyclerView.Adapter<Recycler
             postAuthor = (TextView)itemView.findViewById(R.id.post_author);
             postScore = (TextView)itemView.findViewById(R.id.post_score);
             postDisplayDate = (TextView)itemView.findViewById(R.id.post_displaydate);
+            postHeaderLayout = (RelativeLayout)itemView.findViewById(R.id.post_header_layout);
         }
     }
 

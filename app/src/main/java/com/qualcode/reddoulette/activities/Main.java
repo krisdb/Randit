@@ -93,8 +93,7 @@ public class Main extends AppCompatActivity  {
     {
         if (subreddit == null) return;
 
-        subreddit = "Android";
-        String json = Utilities.GetRemoteJSON("http://www.reddit.com/r/".concat(subreddit).concat("/.json"));
+        final String json = Utilities.GetRemoteJSON("http://www.reddit.com/r/".concat(subreddit).concat("/.json"));
 
         try {
             JSONObject response = new JSONObject(json);
