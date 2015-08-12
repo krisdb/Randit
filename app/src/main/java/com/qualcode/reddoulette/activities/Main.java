@@ -108,6 +108,7 @@ public class Main extends AppCompatActivity  {
                 RedditPost rp = Utilities.GetPost(post);
                 rp.isSelf = post.getBoolean("is_self");
                 rp.setCommentTotal(post.getInt("num_comments"));
+                rp.setIsSticky(post.getBoolean("stickied"));
 
                 mPosts.add(rp);
             }

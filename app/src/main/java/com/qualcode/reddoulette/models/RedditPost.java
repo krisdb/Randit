@@ -9,7 +9,7 @@ public final class RedditPost {
 	public int score, totalComments;
 	public Date postDate;
 	public List<RedditComment> comments;
-	public Boolean isSelf;
+	public Boolean isSelf, isSticky;
 
 	public RedditPost(String title, String author, int score, String domain, Date postDate, String displayDate)
 	{
@@ -59,6 +59,16 @@ public final class RedditPost {
 	public Boolean IsSelf()
 	{
 		return isSelf;
+	}
+
+	public Boolean IsSticky()
+	{
+		return isSticky;
+	}
+
+	public void setIsSticky(Boolean isSticky)
+	{
+		this.isSticky = isSticky;
 	}
 
 	public void setIsSelf(Boolean isSelf)

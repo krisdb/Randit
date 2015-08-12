@@ -2,16 +2,17 @@
     android:orientation="horizontal"
     android:layout_height="fill_parent"
     android:layout_width="fill_parent"
-    android:paddingLeft="5dp"
-    android:paddingRight="5dp"
-    android:paddingTop="8dp"
-    android:paddingBottom="8dp"
+    android:layout_marginLeft="5dp"
+    android:layout_marginRight="5dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="8dp"
     >
 
         <RelativeLayout
+            android:id="@+id/post_layout"
             android:orientation="horizontal"
-            android:layout_height="match_parent"
-            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:layout_width="fill_parent"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
             android:paddingTop="8dp"
@@ -78,13 +79,14 @@
                 android:id="@+id/domain"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/score"
+                android:layout_below="@id/title"
                 android:textStyle="bold"
                 />
 
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/commments_layout"
             android:orientation="vertical"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
@@ -93,6 +95,7 @@
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
             android:layout_weight="1"
+            android:background="#ccc"
             >
                 <ImageView
                     android:id="@+id/commments_icon"
