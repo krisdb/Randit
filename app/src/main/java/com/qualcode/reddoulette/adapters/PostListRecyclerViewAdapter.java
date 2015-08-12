@@ -55,12 +55,14 @@ public class PostListRecyclerViewAdapter extends RecyclerView.Adapter<PostListRe
     public void onBindViewHolder(PostListViewHolder personViewHolder, int i) {
         final RedditPost post = mPosts.get(i);
         personViewHolder.title.setText(post.getTitle());
-        personViewHolder.score.setText(String.valueOf(post.getGetScore()));
+        personViewHolder.score.setText(String.valueOf(post.getScore()));
         personViewHolder.displayDate.setText(post.getDisplayDate());
         personViewHolder.author.setText(post.getAuthor());
+        personViewHolder.totalComments.setText(String.valueOf(post.getCommentTotal()));
 
-        if (post.IsSelf() == false)
+        if (post.IsSelf() == false) {
             personViewHolder.domain.setText(post.getDomain());
+        }
         else
             personViewHolder.domain.setVisibility(View.GONE);
     }
@@ -72,7 +74,7 @@ public class PostListRecyclerViewAdapter extends RecyclerView.Adapter<PostListRe
     }
 
     public class PostListViewHolder extends RecyclerView.ViewHolder {
-        TextView title, score, displayDate, author, domain;
+        TextView title, score, displayDate, author, domain, totalComments;
 
         PostListViewHolder(View itemView) {
             super(itemView);
@@ -81,6 +83,7 @@ public class PostListRecyclerViewAdapter extends RecyclerView.Adapter<PostListRe
             displayDate = (TextView)itemView.findViewById(R.id.displayDate);
             author = (TextView)itemView.findViewById(R.id.author);
             domain = (TextView)itemView.findViewById(R.id.domain);
+            totalComments = (TextView)itemView.findViewById(R.id.comments_count);
         }
     }
 }

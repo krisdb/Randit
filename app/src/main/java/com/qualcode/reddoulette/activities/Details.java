@@ -2,7 +2,6 @@ package com.qualcode.reddoulette.activities;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,13 +9,13 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.TextView;
+
 import com.qualcode.reddoulette.R;
-import com.qualcode.reddoulette.adapters.CommentListRecyclerViewAdapter;
+import com.qualcode.reddoulette.adapters.DetailListRecyclerViewAdapter;
 import com.qualcode.reddoulette.common.DividerItemDecoration;
 import com.qualcode.reddoulette.common.Utilities;
 import com.qualcode.reddoulette.models.RedditComment;
+import com.qualcode.reddoulette.models.RedditObject;
 import com.qualcode.reddoulette.models.RedditPost;
 
 import org.json.JSONArray;
@@ -29,7 +28,7 @@ import java.util.List;
 
 public class Details extends AppCompatActivity {
 
-    private RedditPost mPost = new RedditPost();
+    private  List<RedditObject> mObjects = new ArrayList<>();
     protected RecyclerView mRecyclerView;
     private String mUrl;
 
@@ -64,8 +63,9 @@ public class Details extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... params) {
-            //url = "https://www.reddit.com/r/Android/comments/3glqqd/dev_i_just_published_an_app_aimed_for_high_school/.json";
-            url = "http://www.reddit.com".concat(mUrl.concat(".json"));
+            //url = "https://www.reddit.com/r/Android/comments/3glqqd/dev_i_just_published_an_app_aimed_for_high_school/.json"; //self with comments
+            url = "https://www.reddit.com/r/ToolBand/comments/3gozjm/sam_harris_drugs_and_the_meaning_of_life/.json"; //video no comment
+            //url = "http://www.reddit.com".concat(mUrl.concat(".json"));
             String json = Utilities.GetRemoteJSON(url);
 
             try {
@@ -75,16 +75,24 @@ public class Details extends AppCompatActivity {
 
                 final JSONObject postData = childrenPost.getJSONObject(0).getJSONObject("data");
 
-                mPost = Utilities.GetPost(postData);
-                mPost.setText(postData.getString("selftext"));
-                mPost.isSelf = postData.getBoolean("is_self");
+                RedditObject objPost = new RedditObject();
+
+                RedditPost post = Utilities.GetPost(postData);
+                post.setText(postData.getString("selftext"));
+                post.isSelf = postData.getBoolean("is_self");
+
+                objPost.setPost(post);
+
+                mObjects.add(objPost);
+
+                RedditObject objComment = new RedditObject();
 
                 final JSONArray childrenComments = new JSONArray(json).getJSONObject(1).getJSONObject("data").getJSONArray("children");
-
                 final int length = childrenComments.length();
                 for(int i=0; i < length; i++) {
-
                     if (childrenComments.getJSONObject(i).optString("kind") == null || childrenComments.getJSONObject(i).optString("kind").equals("t1") == false) continue;
+
+                    RedditComment comment = new RedditComment();
 
                     JSONObject commentData = childrenComments.getJSONObject(i).getJSONObject("data");
 
@@ -95,8 +103,11 @@ public class Details extends AppCompatActivity {
                     String displayDate = Utilities.GetDisplayDate(commentData.getString("created_utc"));
 
                     comments.add(new RedditComment(text, author, score, date, displayDate));
+
                 }
-                mPost.setComments(comments);
+                objComment.setComments(comments);
+
+                mObjects.add(objComment);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -106,28 +117,12 @@ public class Details extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Void ununsed) {
-            final TextView tvTitle = (TextView)findViewById(R.id.title);
-            tvTitle.setText(mPost.getTitle());
-            ((TextView)findViewById(R.id.text)).setText(mPost.getText());
-            ((TextView)findViewById(R.id.author)).setText(mPost.getAuthor());
-            ((TextView)findViewById(R.id.score)).setText(String.valueOf(mPost.getGetScore()));
-            ((TextView)findViewById(R.id.displayDate)).setText(String.valueOf(mPost.getDisplayDate()));
 
-            if (mPost.IsSelf() == false) {
-                ((TextView)findViewById(R.id.domain)).setText(mPost.getDomain());
-                tvTitle.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        v.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(mPost.getUrl())));
-                    }
-                });
+            if (mObjects.size() > 0) {
+                final DetailListRecyclerViewAdapter adapter = new DetailListRecyclerViewAdapter(mObjects);
+                mRecyclerView.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
             }
-            else
-                findViewById(R.id.domain).setVisibility(View.GONE);
-
-            final CommentListRecyclerViewAdapter adapter = new CommentListRecyclerViewAdapter(mPost.getComments(), mRecyclerView);
-            mRecyclerView.setAdapter(adapter);
-            adapter.notifyDataSetChanged();
 
             if (this.dialog.isShowing())
                 this.dialog.dismiss();
@@ -139,7 +134,7 @@ public class Details extends AppCompatActivity {
         final Intent sharingIntent = new Intent(Intent.ACTION_SEND);
         sharingIntent.setType("text/plain");
 
-        sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, mPost.getTitle());
+        sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, mObjects.get(0).getPost().getTitle());
         sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, "http://www.reddit.com".concat(mUrl));
 
         startActivity(Intent.createChooser(sharingIntent, "Share"));

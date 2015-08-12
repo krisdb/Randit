@@ -1,41 +1,39 @@
 package com.qualcode.reddoulette.models;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public final class RedditPost {
 
 	public String url, permalink, title, author, domain, text, displayDate;
-	public int score;
+	public int score, totalComments;
 	public Date postDate;
 	public List<RedditComment> comments;
 	public Boolean isSelf;
 
-	public RedditPost()
-	{
-	}
-
 	public RedditPost(String title, String author, int score, String domain, Date postDate, String displayDate)
 	{
-		this.url = url;
 		this.domain = domain;
 		this.title = title;
 		this.author = author;
 		this.score = score;
 		this.postDate = postDate;
 		this.displayDate = displayDate;
-		this.comments = comments;
+	}
+
+	public int getCommentTotal()
+	{
+		return totalComments;
+	}
+
+	public void setCommentTotal(int total)
+	{
+		this.totalComments = total;
 	}
 
 	public void setPermaLink(String permalink)
 	{
 		this.permalink = permalink;
-	}
-
-	public void setIsSelf(Boolean isSelf)
-	{
-		this.isSelf = isSelf;
 	}
 
 	public void setComments(List<RedditComment> comments)
@@ -61,6 +59,11 @@ public final class RedditPost {
 	public Boolean IsSelf()
 	{
 		return isSelf;
+	}
+
+	public void setIsSelf(Boolean isSelf)
+	{
+		this.isSelf = isSelf;
 	}
 
 	public String getPermaLink()
@@ -93,7 +96,7 @@ public final class RedditPost {
 		return author;
 	}
 
-	public int getGetScore()
+	public int getScore()
 	{
 		return score;
 	}

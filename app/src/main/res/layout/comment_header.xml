@@ -1,0 +1,81 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="0dp">
+
+    <TextView
+        android:id="@+id/post_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:paddingBottom="5dp"
+        />
+
+    <TextView
+        android:id="@+id/post_score"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/post_title"
+        android:textStyle="bold"
+        />
+
+    <TextView
+        android:text="pts "
+        android:id="@+id/post_pts"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/post_title"
+        android:layout_toRightOf="@id/post_score"
+        />
+
+    <TextView
+        android:text="by "
+        android:id="@+id/post_by"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/post_title"
+        android:layout_toRightOf="@id/post_pts"
+        />
+
+    <TextView
+        android:id="@+id/post_author"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/post_title"
+        android:textStyle="bold"
+        android:layout_toRightOf="@id/post_by"
+        />
+
+    <TextView
+        android:id="@+id/post_displaydate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/post_title"
+        android:textStyle="bold"
+        android:layout_toRightOf="@id/post_author"
+        android:paddingLeft="5dp"
+        />
+
+    <TextView
+        android:id="@+id/post_domain"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/post_score"
+        android:textStyle="bold"
+        />
+
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:layout_below="@id/post_domain"
+        android:paddingTop="5dp"
+        android:visibility="gone"
+        />
+</RelativeLayout>

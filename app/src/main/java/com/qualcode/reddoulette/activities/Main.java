@@ -75,7 +75,7 @@ public class Main extends AppCompatActivity  {
         @Override
         protected void onPostExecute(final String subreddit) {
 
-            setTitle(subreddit);
+            setTitle("r/".concat(subreddit.toLowerCase()));
 
             final PostListRecyclerViewAdapter adapter = new PostListRecyclerViewAdapter(mPosts, mRecyclerView);
             mRecyclerView.setAdapter(adapter);
@@ -89,10 +89,11 @@ public class Main extends AppCompatActivity  {
         }
     }
 
-    private void GetPosts(final String subreddit)
+    private void GetPosts(String subreddit)
     {
         if (subreddit == null) return;
 
+        subreddit = "Android";
         String json = Utilities.GetRemoteJSON("http://www.reddit.com/r/".concat(subreddit).concat("/.json"));
 
         try {
@@ -106,6 +107,7 @@ public class Main extends AppCompatActivity  {
 
                 RedditPost rp = Utilities.GetPost(post);
                 rp.isSelf = post.getBoolean("is_self");
+                rp.setCommentTotal(post.getInt("num_comments"));
 
                 mPosts.add(rp);
             }
