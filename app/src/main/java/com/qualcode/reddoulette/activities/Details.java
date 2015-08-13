@@ -3,6 +3,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -44,6 +45,7 @@ public class Details extends AppCompatActivity {
         mUrl = getIntent().getExtras().getString("permalink");
 
         setTitle(R.string.app_name);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         new GetDetails(this).execute();
     }
@@ -65,6 +67,7 @@ public class Details extends AppCompatActivity {
         protected Void doInBackground(Void... params) {
             //url = "https://www.reddit.com/r/Android/comments/3glqqd/dev_i_just_published_an_app_aimed_for_high_school/.json"; //self with comments
             //url = "https://www.reddit.com/r/ToolBand/comments/3gozjm/sam_harris_drugs_and_the_meaning_of_life/.json"; //video no comment
+            //url = "https://www.reddit.com/r/NorthKoreaPics/comments/3g066g/local_boys_walking_pass_the_kim_ii_sung_parade/.json";
             url = "http://www.reddit.com".concat(mUrl.concat(".json"));
             String json = Utilities.GetRemoteJSON(url);
 
@@ -80,6 +83,7 @@ public class Details extends AppCompatActivity {
                 RedditPost post = Utilities.GetPost(postData);
                 post.setText(postData.getString("selftext"));
                 post.isSelf = postData.getBoolean("is_self");
+                post.setText(postData.getString("selftext"));
 
                 objPost.setPost(post);
 
@@ -92,8 +96,6 @@ public class Details extends AppCompatActivity {
                 for(int i=0; i < length; i++) {
                     if (childrenComments.getJSONObject(i).optString("kind") == null || childrenComments.getJSONObject(i).optString("kind").equals("t1") == false) continue;
 
-                    RedditComment comment = new RedditComment();
-
                     JSONObject commentData = childrenComments.getJSONObject(i).getJSONObject("data");
 
                     String text = commentData.getString("body");
@@ -103,7 +105,6 @@ public class Details extends AppCompatActivity {
                     String displayDate = Utilities.GetDisplayDate(commentData.getString("created_utc"));
 
                     comments.add(new RedditComment(text, author, score, date, displayDate));
-
                 }
                 objComment.setComments(comments);
 
@@ -150,6 +151,11 @@ public class Details extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         int id = item.getItemId();
+
+        if (id == android.R.id.home) {
+            finish();
+            return true;
+        }
 
         if (id == R.id.action_share) {
             Share();

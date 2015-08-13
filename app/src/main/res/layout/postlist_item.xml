@@ -2,22 +2,15 @@
     android:orientation="horizontal"
     android:layout_height="fill_parent"
     android:layout_width="fill_parent"
-    android:layout_marginLeft="5dp"
-    android:layout_marginRight="5dp"
-    android:layout_marginTop="8dp"
-    android:layout_marginBottom="8dp"
     >
 
         <RelativeLayout
             android:id="@+id/post_layout"
             android:orientation="horizontal"
-            android:layout_height="fill_parent"
-            android:layout_width="fill_parent"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:layout_weight="2"
+            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:padding="8dp"
+            android:layout_weight="7"
             >
 
             <TextView
@@ -71,29 +64,24 @@
                 android:layout_below="@id/title"
                 android:textStyle="bold"
                 android:layout_toRightOf="@id/author"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
                 />
 
             <TextView
                 android:id="@+id/domain"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/title"
-                android:textStyle="bold"
-                />
+                android:layout_below="@id/score"
+                android:textStyle="bold" />
 
         </RelativeLayout>
 
         <RelativeLayout
             android:id="@+id/commments_layout"
             android:orientation="vertical"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
+            android:layout_height="match_parent"
+            android:layout_width="0dp"
             android:layout_weight="1"
             android:background="#ccc"
             >
@@ -102,7 +90,9 @@
                     android:src="@drawable/ic_comment"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
+                    android:gravity="center_vertical"
+                    android:layout_centerVertical="true"
+                    android:layout_centerInParent="true"
                     />
 
                 <TextView
@@ -110,8 +100,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/commments_icon"
-                    android:layout_alignParentBottom="true"
                     android:textSize="10sp"
+                    android:gravity="center_vertical"
+                    android:layout_centerVertical="true"
+                    android:layout_centerInParent="true"
                     />
         </RelativeLayout>
 

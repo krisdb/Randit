@@ -3,6 +3,9 @@ package com.qualcode.reddoulette.adapters;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
+import android.text.SpannableString;
+import android.text.style.UnderlineSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,6 +65,10 @@ public class DetailListRecyclerViewAdapter extends RecyclerView.Adapter<Recycler
         if (holder instanceof HeaderViewHolder) {
             if (mObjects.get(0).getPost().IsSelf() == false)
             {
+                SpannableString title = new SpannableString(mObjects.get(0).getPost().getTitle());
+                title.setSpan(new UnderlineSpan(), 0, title.length(), 0);
+                ((HeaderViewHolder)holder).postTitle.setText(title);
+
                 ((HeaderViewHolder)holder).postHeaderLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -70,18 +77,20 @@ public class DetailListRecyclerViewAdapter extends RecyclerView.Adapter<Recycler
                     }
                 });
             }
+            else
+                ((HeaderViewHolder)holder).postTitle.setText(mObjects.get(0).getPost().getTitle());
 
-            ((HeaderViewHolder)holder).postTitle.setText(mObjects.get(0).getPost().getTitle());
             ((HeaderViewHolder)holder).postAuthor.setText(mObjects.get(0).getPost().getAuthor());
             ((HeaderViewHolder)holder).postScore.setText(String.valueOf(mObjects.get(0).getPost().getScore()));
             ((HeaderViewHolder)holder).postDisplayDate.setText(mObjects.get(0).getPost().getDisplayDate());
+            ((HeaderViewHolder)holder).postText.setText(mObjects.get(0).getPost().getText());
 
         }
         else {
-            ((CommentViewHolder)holder).comment.setText(mObjects.get(1).getComments().get(i).getText());
-            ((CommentViewHolder)holder).author.setText(mObjects.get(1).getComments().get(i).getAuthor());
-            ((CommentViewHolder)holder).score.setText(String.valueOf(mObjects.get(1).getComments().get(i).getScore()));
-            ((CommentViewHolder)holder).displayDate.setText(mObjects.get(1).getComments().get(i).getDisplayDate());
+            ((CommentViewHolder)holder).comment.setText(mObjects.get(1).getComments().get(i - 1).getText());
+            ((CommentViewHolder)holder).author.setText(mObjects.get(1).getComments().get(i-1).getAuthor());
+            ((CommentViewHolder)holder).score.setText(String.valueOf(mObjects.get(1).getComments().get(i-1).getScore()));
+            ((CommentViewHolder)holder).displayDate.setText(mObjects.get(1).getComments().get(i-1).getDisplayDate());
         }
     }
 
@@ -92,7 +101,7 @@ public class DetailListRecyclerViewAdapter extends RecyclerView.Adapter<Recycler
     }
 
     public class HeaderViewHolder extends RecyclerView.ViewHolder {
-        TextView postTitle, postAuthor, postScore, postDisplayDate;
+        TextView postTitle, postAuthor, postScore, postDisplayDate, postText;
         RelativeLayout postHeaderLayout;
 
         HeaderViewHolder(View itemView) {
@@ -101,6 +110,7 @@ public class DetailListRecyclerViewAdapter extends RecyclerView.Adapter<Recycler
             postAuthor = (TextView)itemView.findViewById(R.id.post_author);
             postScore = (TextView)itemView.findViewById(R.id.post_score);
             postDisplayDate = (TextView)itemView.findViewById(R.id.post_displaydate);
+            postText = (TextView)itemView.findViewById(R.id.post_text);
             postHeaderLayout = (RelativeLayout)itemView.findViewById(R.id.post_header_layout);
         }
     }

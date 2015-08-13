@@ -34,7 +34,8 @@ public class PostListRecyclerViewAdapter extends RecyclerView.Adapter<PostListRe
 
     @Override
     public PostListViewHolder onCreateViewHolder(ViewGroup viewGroup, final int i) {
-        final View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.postlist_item, null);
+
+        final View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.postlist_item, viewGroup, false);
 
         /*
         v.setOnClickListener(new View.OnClickListener() {
@@ -73,11 +74,27 @@ public class PostListRecyclerViewAdapter extends RecyclerView.Adapter<PostListRe
 
         if (post.IsSticky())
         {
-            personViewHolder.postLayout.setBackgroundColor(Color.GREEN);
+            int darkGreen = Color.parseColor("#006400");
+            personViewHolder.title.setTextColor(darkGreen);
+            personViewHolder.title.setTextColor(darkGreen);
+            personViewHolder.score.setTextColor(darkGreen);
+            personViewHolder.displayDate.setTextColor(darkGreen);
+            personViewHolder.author.setTextColor(darkGreen);
+            personViewHolder.domain.setTextColor(darkGreen);
+            personViewHolder.pts.setTextColor(darkGreen);
+            personViewHolder.by.setTextColor(darkGreen);
         }
         else
         {
-            personViewHolder.postLayout.setBackgroundColor(Color.WHITE);
+            personViewHolder.postLayout.setBackgroundColor(Color.parseColor("#eeeeee"));
+            personViewHolder.title.setTextColor(Color.DKGRAY);
+            personViewHolder.title.setTextColor(Color.DKGRAY);
+            personViewHolder.score.setTextColor(Color.DKGRAY);
+            personViewHolder.displayDate.setTextColor(Color.DKGRAY);
+            personViewHolder.author.setTextColor(Color.DKGRAY);
+            personViewHolder.domain.setTextColor(Color.DKGRAY);
+            personViewHolder.pts.setTextColor(Color.DKGRAY);
+            personViewHolder.by.setTextColor(Color.DKGRAY);
         }
 
         if (post.IsSelf()) {
@@ -116,7 +133,7 @@ public class PostListRecyclerViewAdapter extends RecyclerView.Adapter<PostListRe
     }
 
     public class PostListViewHolder extends RecyclerView.ViewHolder {
-        TextView title, score, displayDate, author, domain, totalComments;
+        TextView title, score, displayDate, author, domain, totalComments, pts, by;
         RelativeLayout commentsLayout, postLayout;
 
         PostListViewHolder(View itemView) {
@@ -129,6 +146,8 @@ public class PostListRecyclerViewAdapter extends RecyclerView.Adapter<PostListRe
             totalComments = (TextView)itemView.findViewById(R.id.comments_count);
             commentsLayout = (RelativeLayout)itemView.findViewById(R.id.commments_layout);
             postLayout = (RelativeLayout)itemView.findViewById(R.id.post_layout);
+            pts = (TextView)itemView.findViewById(R.id.pts);
+            by = (TextView)itemView.findViewById(R.id.by);
         }
     }
 }
