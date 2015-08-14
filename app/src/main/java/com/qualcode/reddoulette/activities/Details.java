@@ -163,7 +163,7 @@ public class Details extends AppCompatActivity {
             return true;
         }
 
-        if (id == R.id.action_open_browser) {
+        if (id == R.id.action_open_reddit) {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(mObjects.get(0).getPost().getPermaLink())));
             return true;
         }

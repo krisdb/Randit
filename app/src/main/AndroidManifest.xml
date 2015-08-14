@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.qualcode.reddoulette"
-    android:versionCode="2"
+    android:versionCode="3"
     android:versionName="1"
     >
 
@@ -22,8 +22,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.Details"
-            android:label="@string/title_activity_details" >
+            android:name=".activities.Details">
         </activity>
     </application>
 
