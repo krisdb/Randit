@@ -119,7 +119,7 @@ public class Main extends AppCompatActivity  {
 
     private String GetRandomSubreddit()
     {
-        String json = Utilities.GetRemoteJSON("http://www.reddit.com/r/random/.json");
+        String json = Utilities.GetRemoteJSON(getString(R.string.url_random));
 
         JSONObject obj;
 

@@ -2,6 +2,7 @@ package com.qualcode.reddoulette.activities;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
@@ -68,7 +69,7 @@ public class Details extends AppCompatActivity {
             //url = "https://www.reddit.com/r/Android/comments/3glqqd/dev_i_just_published_an_app_aimed_for_high_school/.json"; //self with comments
             //url = "https://www.reddit.com/r/ToolBand/comments/3gozjm/sam_harris_drugs_and_the_meaning_of_life/.json"; //video no comment
             //url = "https://www.reddit.com/r/NorthKoreaPics/comments/3g066g/local_boys_walking_pass_the_kim_ii_sung_parade/.json";
-            url = "http://www.reddit.com".concat(mUrl.concat(".json"));
+            url = mUrl.concat(".json");
             String json = Utilities.GetRemoteJSON(url);
 
             try {
@@ -159,6 +160,11 @@ public class Details extends AppCompatActivity {
 
         if (id == R.id.action_share) {
             Share();
+            return true;
+        }
+
+        if (id == R.id.action_open_browser) {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(mObjects.get(0).getPost().getPermaLink())));
             return true;
         }
 

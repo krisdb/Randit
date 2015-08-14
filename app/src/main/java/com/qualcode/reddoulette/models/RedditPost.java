@@ -78,7 +78,7 @@ public final class RedditPost {
 
 	public String getPermaLink()
 	{
-		return permalink;
+		return "http://www.reddit.com".concat(permalink);
 	}
 
 	public String getText()
