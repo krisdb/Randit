@@ -2,6 +2,8 @@ package com.qualcode.reddoulette.activities;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -25,6 +27,7 @@ public class Main extends AppCompatActivity  {
     protected RecyclerView mRecyclerView;
     private List<RedditPost> mPosts = new ArrayList<>();
     SwipeRefreshLayout mSwipeRefreshLayout;
+    private String mSubreddit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +54,7 @@ public class Main extends AppCompatActivity  {
         new GetPosts(this).execute();
     }
 
-        public class GetPosts extends AsyncTask<Void, Void, String> {
+    public class GetPosts extends AsyncTask<Void, Void, Void> {
         private ProgressDialog dialog;
 
         public GetPosts(final Activity activity) {
@@ -61,39 +64,39 @@ public class Main extends AppCompatActivity  {
 
             if (this.dialog.isShowing() == false && mSwipeRefreshLayout.isRefreshing() == false)
                 this.dialog.show();
-        }
+            }
 
-        @Override
-        protected String doInBackground(Void... params) {
+            @Override
+            protected Void doInBackground(Void... params) {
 
-            String subreddit = GetRandomSubreddit();
-            GetPosts(subreddit);
+                GetRandomSubreddit();
+                GetPosts();
 
-            return subreddit;
-        }
+                return null;
+            }
 
-        @Override
-        protected void onPostExecute(final String subreddit) {
+            @Override
+            protected void onPostExecute(Void unused) {
 
-            setTitle("r/".concat(subreddit.toLowerCase()));
+                setTitle("r/".concat(mSubreddit.toLowerCase()));
 
-            final PostListRecyclerViewAdapter adapter = new PostListRecyclerViewAdapter(mPosts, mRecyclerView);
-            mRecyclerView.setAdapter(adapter);
-            adapter.notifyDataSetChanged();
+                final PostListRecyclerViewAdapter adapter = new PostListRecyclerViewAdapter(mPosts, mRecyclerView);
+                mRecyclerView.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
 
-            if (this.dialog.isShowing())
-                this.dialog.dismiss();
+                if (this.dialog.isShowing())
+                    this.dialog.dismiss();
 
-            if (mSwipeRefreshLayout.isRefreshing())
-                mSwipeRefreshLayout.setRefreshing(false);
-        }
+                if (mSwipeRefreshLayout.isRefreshing())
+                    mSwipeRefreshLayout.setRefreshing(false);
+             }
     }
 
-    private void GetPosts(String subreddit)
+    private void GetPosts()
     {
-        if (subreddit == null) return;
+        if (mSubreddit == null) return;
 
-        final String json = Utilities.GetRemoteJSON("http://www.reddit.com/r/".concat(subreddit).concat("/.json"));
+        final String json = Utilities.GetRemoteJSON("http://www.reddit.com/r/".concat(mSubreddit).concat("/.json"));
 
         try {
             JSONObject response = new JSONObject(json);
@@ -117,7 +120,7 @@ public class Main extends AppCompatActivity  {
         }
     }
 
-    private String GetRandomSubreddit()
+    private Void GetRandomSubreddit()
     {
         String json = Utilities.GetRemoteJSON(getString(R.string.url_random));
 
@@ -132,7 +135,7 @@ public class Main extends AppCompatActivity  {
             JSONObject jsonObject = (JSONObject) children.get(0);
             JSONObject data2 = (JSONObject) jsonObject.get("data");
 
-            return data2.getString("subreddit");
+            mSubreddit = data2.getString("subreddit");
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -151,6 +154,11 @@ public class Main extends AppCompatActivity  {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         int id = item.getItemId();
+
+        if (id == R.id.action_open_reddit) {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.reddit.com/r/".concat(mSubreddit.toLowerCase()))));
+            return true;
+        }
 
         //if (id == R.id.action_settings) {
         //return true;

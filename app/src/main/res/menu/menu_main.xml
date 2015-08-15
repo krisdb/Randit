@@ -6,6 +6,10 @@
         android:icon="@drawable/ic_action_refresh"
         />
 
+    <item android:id="@+id/action_open_reddit" android:title="@string/action_open_reddit"
+        android:orderInCategory="200" app:showAsAction="ifRoom" android:icon="@drawable/ic_action_reddit" />
+
+
     <!--<item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:orderInCategory="200" app:showAsAction="never" />-->
 </menu>
