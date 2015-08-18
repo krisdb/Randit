@@ -4,7 +4,9 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.SystemClock;
 import android.support.v4.app.NavUtils;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -33,6 +35,7 @@ public class Details extends AppCompatActivity {
     private  List<RedditObject> mObjects = new ArrayList<>();
     protected RecyclerView mRecyclerView;
     private String mUrl;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +50,20 @@ public class Details extends AppCompatActivity {
 
         setTitle(R.string.app_name);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mSwipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.detailsRefreshLayout);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshContent();
+            }
+        });
 
+        refreshContent();
+    }
+
+
+    private void refreshContent() {
+        mObjects = new ArrayList<>();
         new GetDetails(this).execute();
     }
 
@@ -56,16 +72,14 @@ public class Details extends AppCompatActivity {
         private String url;
 
         public GetDetails(final Activity activity) {
-            this.dialog = new ProgressDialog(activity);
-            this.dialog.setTitle(R.string.app_name);
-            this.dialog.setMessage("Retrieving...");
+            mSwipeRefreshLayout.setRefreshing(true);
 
-            if (!this.dialog.isShowing())
-                this.dialog.show();
         }
 
         @Override
         protected Void doInBackground(Void... params) {
+
+            SystemClock.sleep(7000);
             //url = "https://www.reddit.com/r/Android/comments/3glqqd/dev_i_just_published_an_app_aimed_for_high_school/.json"; //self with comments
             //url = "https://www.reddit.com/r/ToolBand/comments/3gozjm/sam_harris_drugs_and_the_meaning_of_life/.json"; //video no comment
             //url = "https://www.reddit.com/r/NorthKoreaPics/comments/3g066g/local_boys_walking_pass_the_kim_ii_sung_parade/.json";
@@ -126,9 +140,9 @@ public class Details extends AppCompatActivity {
                 adapter.notifyDataSetChanged();
             }
 
-            if (this.dialog.isShowing())
-                this.dialog.dismiss();
-        }
+            if (mSwipeRefreshLayout.isRefreshing())
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
     }
 
     private void Share()

@@ -3,8 +3,10 @@ package com.qualcode.reddoulette.activities;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,6 +14,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -32,7 +35,7 @@ import java.util.List;
 public class Main extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener  {
     protected RecyclerView mRecyclerView;
     private List<RedditPost> mPosts = new ArrayList<>();
-    SwipeRefreshLayout mSwipeRefreshLayout;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
     private String mSubreddit;
     private GoogleApiClient mGoogleApiClient;
     private static int RC_SIGN_IN = 9001;
@@ -40,8 +43,9 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
     private boolean mResolvingConnectionFailure = false;
     private boolean mAutoStartSignInflow = true;
     private boolean mSignInClicked = false;
-    boolean mExplicitSignOut = false;
-    boolean mInSignInFlow = false;
+    private boolean mExplicitSignOut = false;
+    private boolean mInSignInFlow = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,7 +62,7 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(this));
 
-        mSwipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.refeshlayout);
+        mSwipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.mainRefreshLayout);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -123,10 +127,10 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
     @Override
     protected void onStart() {
         super.onStart();
-        if (!mInSignInFlow && !mExplicitSignOut) {
+        //if (!mInSignInFlow && !mExplicitSignOut) {
             // auto sign in
-            mGoogleApiClient.connect();
-        }
+            //mGoogleApiClient.connect();
+        //}
     }
 
     @Override
@@ -157,15 +161,12 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
     }
 
     public class GetPosts extends AsyncTask<Void, Void, Void> {
-        private ProgressDialog dialog;
+        private Activity mActivity;
 
         public GetPosts(final Activity activity) {
-            this.dialog = new ProgressDialog(activity);
-            this.dialog.setTitle(R.string.app_name);
-            this.dialog.setMessage("Searching...");
+            this.mActivity = activity;
 
-            if (this.dialog.isShowing() == false && mSwipeRefreshLayout.isRefreshing() == false)
-                this.dialog.show();
+            mSwipeRefreshLayout.setRefreshing(true);
             }
 
             @Override
@@ -186,12 +187,38 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
                 mRecyclerView.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
 
-                if (this.dialog.isShowing())
-                    this.dialog.dismiss();
-
                 if (mSwipeRefreshLayout.isRefreshing())
                     mSwipeRefreshLayout.setRefreshing(false);
-             }
+
+                final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mActivity);
+                final int nsfw = prefs.getInt("achievement_nsfw", 0);
+
+                if (nsfw == 10)
+                    Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_nsfw));
+
+                final int totalViews = prefs.getInt("achievement_views", 0);
+
+                Toast.makeText(mActivity, totalViews, Toast.LENGTH_LONG).show();
+
+                switch (totalViews)
+                {
+                    case 5:
+                        Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_participant_refresher));
+                        break;
+                    case 50:
+                        Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_bronze_refresher));
+                        break;
+                    case 120:
+                        Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_silver_refresher));
+                        break;
+                    case 300:
+                        Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_gold_refresher));
+                        break;
+                    case 1000:
+                        Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_no_life_refresher));
+                        break;
+                }
+            }
     }
 
     private void GetPosts()
@@ -239,6 +266,22 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
 
             mSubreddit = data2.getString("subreddit");
 
+            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            final SharedPreferences.Editor editor = prefs.edit();
+
+            editor.putInt("achievement_views", prefs.getInt("achievement_views", 0) + 1);
+
+            if (data2.getBoolean("over_18"))
+            {
+                final int nsfw = prefs.getInt("achievement_nsfw", 0) + 1;
+
+                if (nsfw < 11)
+                    editor.putInt("achievement_nsfw", nsfw);
+
+            }
+
+            editor.commit();
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -285,12 +328,12 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
         }
 
         if (id == R.id.action_leaderboard) {
-            startActivityForResult(Games.Leaderboards.getAllLeaderboardsIntent(mGoogleApiClient), 100);
+            startActivityForResult(Games.Leaderboards.getAllLeaderboardsIntent(mGoogleApiClient), RC_SIGN_IN);
             return true;
         }
 
         if (id == R.id.action_achievements) {
-            startActivityForResult(Games.Achievements.getAchievementsIntent(mGoogleApiClient), 200);
+            startActivityForResult(Games.Achievements.getAchievementsIntent(mGoogleApiClient), RC_SIGN_IN);
             return true;
         }
 

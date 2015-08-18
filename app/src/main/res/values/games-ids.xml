@@ -10,5 +10,6 @@ Save this file as res/values/games-ids.xml in your project.
   <string name="achievement_silver_refresher">CgkI7ZWm2v8LEAIQBA</string>
   <string name="achievement_gold_refresher">CgkI7ZWm2v8LEAIQBQ</string>
   <string name="achievement_no_life_refresher">CgkI7ZWm2v8LEAIQBg</string>
+  <string name="achievement_nsfw">CgkI7ZWm2v8LEAIQCA</string>
   <string name="leaderboard_reddoulette_leaderboard">CgkI7ZWm2v8LEAIQBw</string>
 </resources>

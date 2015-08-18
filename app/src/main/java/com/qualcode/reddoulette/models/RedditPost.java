@@ -9,7 +9,7 @@ public final class RedditPost {
 	public int score, totalComments;
 	public Date postDate;
 	public List<RedditComment> comments;
-	public Boolean isSelf, isSticky;
+	public Boolean isSelf, isSticky, isNSFW;
 
 	public RedditPost(String title, String author, int score, String domain, Date postDate, String displayDate)
 	{
@@ -54,6 +54,16 @@ public final class RedditPost {
 	public List<RedditComment> getComments()
 	{
 		return comments;
+	}
+
+	public Boolean IsNSFW()
+	{
+		return isNSFW;
+	}
+
+	public void setIsNSFW(Boolean isNSFW)
+	{
+		this.isNSFW = isNSFW;
 	}
 
 	public Boolean IsSelf()
