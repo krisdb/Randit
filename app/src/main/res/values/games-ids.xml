@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Google Play game services IDs.
+Save this file as res/values/games-ids.xml in your project.
+-->
+<resources>
+  <string name="app_id">412237794029</string>
+  <string name="achievement_participant_refresher">CgkI7ZWm2v8LEAIQAg</string>
+  <string name="achievement_bronze_refresher">CgkI7ZWm2v8LEAIQAw</string>
+  <string name="achievement_silver_refresher">CgkI7ZWm2v8LEAIQBA</string>
+  <string name="achievement_gold_refresher">CgkI7ZWm2v8LEAIQBQ</string>
+  <string name="achievement_no_life_refresher">CgkI7ZWm2v8LEAIQBg</string>
+  <string name="leaderboard_reddoulette_leaderboard">CgkI7ZWm2v8LEAIQBw</string>
+</resources>

@@ -9,6 +9,17 @@
     <item android:id="@+id/action_open_reddit" android:title="@string/action_open_reddit"
         android:orderInCategory="200" app:showAsAction="ifRoom" android:icon="@drawable/ic_action_reddit" />
 
+    <item android:id="@+id/action_signin" android:title="@string/action_signin"
+        android:orderInCategory="300" app:showAsAction="ifRoom"  />
+
+    <item android:id="@+id/action_signout" android:title="@string/action_signout"
+        android:orderInCategory="400" app:showAsAction="ifRoom"  />
+
+    <item android:id="@+id/action_leaderboard" android:title="@string/action_leaderboard"
+        android:orderInCategory="500" app:showAsAction="ifRoom"  />
+
+    <item android:id="@+id/action_achievements" android:title="@string/action_achievements"
+        android:orderInCategory="600" app:showAsAction="ifRoom"  />
 
     <!--<item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:orderInCategory="200" app:showAsAction="never" />-->
