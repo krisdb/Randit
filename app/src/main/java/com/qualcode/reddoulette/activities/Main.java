@@ -193,29 +193,27 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
                 final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mActivity);
                 final int nsfw = prefs.getInt("achievement_nsfw", 0);
 
-                if (nsfw == 10)
-                    Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_nsfw));
+                //if (nsfw == 10)
+                    //Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_nsfw));
 
                 final int totalViews = prefs.getInt("achievement_views", 0);
-
-                Toast.makeText(mActivity, totalViews, Toast.LENGTH_LONG).show();
 
                 switch (totalViews)
                 {
                     case 5:
-                        Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_participant_refresher));
+                        //Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_participant_refresher));
                         break;
                     case 50:
-                        Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_bronze_refresher));
+                        //Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_bronze_refresher));
                         break;
                     case 120:
-                        Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_silver_refresher));
+                        //Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_silver_refresher));
                         break;
                     case 300:
-                        Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_gold_refresher));
+                        //Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_gold_refresher));
                         break;
                     case 1000:
-                        Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_no_life_refresher));
+                        //Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_no_life_refresher));
                         break;
                 }
             }

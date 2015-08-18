@@ -79,7 +79,6 @@ public class Details extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... params) {
 
-            SystemClock.sleep(7000);
             //url = "https://www.reddit.com/r/Android/comments/3glqqd/dev_i_just_published_an_app_aimed_for_high_school/.json"; //self with comments
             //url = "https://www.reddit.com/r/ToolBand/comments/3gozjm/sam_harris_drugs_and_the_meaning_of_life/.json"; //video no comment
             //url = "https://www.reddit.com/r/NorthKoreaPics/comments/3g066g/local_boys_walking_pass_the_kim_ii_sung_parade/.json";

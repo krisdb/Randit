@@ -1,0 +1,158 @@
+Microsoft Windows [Version 10.0.10240]
+(c) 2015 Microsoft Corporation. All rights reserved.
+
+C:\Program Files (x86)\Java\jre7\bin>keytool -list -v -keystore c:\users\Kris\.android\debug.keystore -alias androiddebugkey -storepass android -keypass android
+keytool error: java.lang.Exception: Keystore file does not exist: c:\users\Kris\.android\debug.keystore
+java.lang.Exception: Keystore file does not exist: c:\users\Kris\.android\debug.keystore
+        at sun.security.tools.KeyTool.doCommands(Unknown Source)
+        at sun.security.tools.KeyTool.run(Unknown Source)
+        at sun.security.tools.KeyTool.main(Unknown Source)
+
+C:\Program Files (x86)\Java\jre7\bin>keytool -list -v -keystore c:\users\Kris_000\.android\debug.keystore -alias androiddebugkey -storepass android -keypass android
+keytool error: java.lang.Exception: Keystore file does not exist: c:\users\Kris_000\.android\debug.keystore
+java.lang.Exception: Keystore file does not exist: c:\users\Kris_000\.android\debug.keystore
+        at sun.security.tools.KeyTool.doCommands(Unknown Source)
+        at sun.security.tools.KeyTool.run(Unknown Source)
+        at sun.security.tools.KeyTool.main(Unknown Source)
+
+C:\Program Files (x86)\Java\jre7\bin>keytool -list -v -keystore C:\Users\krisd_000\.android\debug.keystore -alias androiddebugkey -storepass android -keypass android
+Alias name: androiddebugkey
+Creation date: Aug 5, 2015
+Entry type: PrivateKeyEntry
+Certificate chain length: 1
+Certificate[1]:
+Owner: CN=Android Debug, O=Android, C=US
+Issuer: CN=Android Debug, O=Android, C=US
+Serial number: 373d7759
+Valid from: Wed Aug 05 18:22:34 EDT 2015 until: Thu Aug 04 18:22:34 EDT 2016
+Certificate fingerprints:
+         MD5:  8F:42:B3:B4:CA:BD:AF:0D:BD:62:53:2E:BA:F5:03:D8
+         SHA1: 7A:6F:AB:4E:32:DA:AA:FB:FC:8C:46:8B:DB:88:7B:0E:F3:46:D1:54
+         SHA256: 1A:8A:EA:E3:E5:FE:20:CF:86:DC:2F:0A:8B:7B:CD:FC:36:D1:BB:1D:0C:FC:99:80:0D:0A:E4:0F:FB:B9:B7:91
+         Signature algorithm name: SHA256withRSA
+         Version: 3
+
+Extensions:
+
+#1: ObjectId: 2.5.29.14 Criticality=false
+SubjectKeyIdentifier [
+KeyIdentifier [
+0000: 93 A2 96 F6 74 CA B4 F4   55 CA E1 60 19 93 FD 6F  ....t...U..`...o
+0010: 88 8E 85 E4                                        ....
+]
+]
+
+
+C:\Program Files (x86)\Java\jre7\bin>keytool -list -v -keystore C:\Users\krisd_000\.android\debug.keystore -alias androiddebugkey -storepass android -keypass android
+Alias name: androiddebugkey
+Creation date: Aug 5, 2015
+Entry type: PrivateKeyEntry
+Certificate chain length: 1
+Certificate[1]:
+Owner: CN=Android Debug, O=Android, C=US
+Issuer: CN=Android Debug, O=Android, C=US
+Serial number: 373d7759
+Valid from: Wed Aug 05 18:22:34 EDT 2015 until: Thu Aug 04 18:22:34 EDT 2016
+Certificate fingerprints:
+         MD5:  8F:42:B3:B4:CA:BD:AF:0D:BD:62:53:2E:BA:F5:03:D8
+         SHA1: 7A:6F:AB:4E:32:DA:AA:FB:FC:8C:46:8B:DB:88:7B:0E:F3:46:D1:54
+         SHA256: 1A:8A:EA:E3:E5:FE:20:CF:86:DC:2F:0A:8B:7B:CD:FC:36:D1:BB:1D:0C:FC:99:80:0D:0A:E4:0F:FB:B9:B7:91
+         Signature algorithm name: SHA256withRSA
+         Version: 3
+
+Extensions:
+
+#1: ObjectId: 2.5.29.14 Criticality=false
+SubjectKeyIdentifier [
+KeyIdentifier [
+0000: 93 A2 96 F6 74 CA B4 F4   55 CA E1 60 19 93 FD 6F  ....t...U..`...o
+0010: 88 8E 85 E4                                        ....
+]
+]
+
+
+C:\Program Files (x86)\Java\jre7\bin>keytool -list -v -keystore C:\Users\krisd_000\.android\debug.keystore -alias androiddebugkey -storepass android -keypass android
+Alias name: androiddebugkey
+Creation date: Aug 5, 2015
+Entry type: PrivateKeyEntry
+Certificate chain length: 1
+Certificate[1]:
+Owner: CN=Android Debug, O=Android, C=US
+Issuer: CN=Android Debug, O=Android, C=US
+Serial number: 373d7759
+Valid from: Wed Aug 05 18:22:34 EDT 2015 until: Thu Aug 04 18:22:34 EDT 2016
+Certificate fingerprints:
+         MD5:  8F:42:B3:B4:CA:BD:AF:0D:BD:62:53:2E:BA:F5:03:D8
+         SHA1: 7A:6F:AB:4E:32:DA:AA:FB:FC:8C:46:8B:DB:88:7B:0E:F3:46:D1:54
+         SHA256: 1A:8A:EA:E3:E5:FE:20:CF:86:DC:2F:0A:8B:7B:CD:FC:36:D1:BB:1D:0C:FC:99:80:0D:0A:E4:0F:FB:B9:B7:91
+         Signature algorithm name: SHA256withRSA
+         Version: 3
+
+Extensions:
+
+#1: ObjectId: 2.5.29.14 Criticality=false
+SubjectKeyIdentifier [
+KeyIdentifier [
+0000: 93 A2 96 F6 74 CA B4 F4   55 CA E1 60 19 93 FD 6F  ....t...U..`...o
+0010: 88 8E 85 E4                                        ....
+]
+]
+
+
+C:\Program Files (x86)\Java\jre7\bin>keytool -list -v -keystore C:\Development\QuickMarks\qualcode.jks -alias qualcode -storepass q1w2e3 -keypass q1w2e3
+Alias name: qualcode
+Creation date: Aug 5, 2015
+Entry type: PrivateKeyEntry
+Certificate chain length: 1
+Certificate[1]:
+Owner: L=Cleveland, ST=OH
+Issuer: L=Cleveland, ST=OH
+Serial number: 1023c9a6
+Valid from: Wed Aug 05 15:48:53 EDT 2015 until: Sun Jul 29 15:48:53 EDT 2040
+Certificate fingerprints:
+         MD5:  1D:B3:2B:2A:03:A9:CE:B4:D7:27:19:FF:83:73:38:77
+         SHA1: C0:8C:2B:FD:46:71:65:3B:4D:32:02:EF:54:AA:CD:F4:B5:04:19:A4
+         SHA256: 2E:5F:B8:67:0B:2B:02:70:FB:D2:D5:31:B3:6E:5D:02:67:A4:11:9D:7B:A8:67:8C:22:17:41:D7:9C:84:29:74
+         Signature algorithm name: SHA256withRSA
+         Version: 3
+
+Extensions:
+
+#1: ObjectId: 2.5.29.14 Criticality=false
+SubjectKeyIdentifier [
+KeyIdentifier [
+0000: C9 59 7D F9 81 CD 43 CD   DD 5A 02 55 8E C2 26 EF  .Y....C..Z.U..&.
+0010: 86 B1 19 D3                                        ....
+]
+]
+
+
+C:\Program Files (x86)\Java\jre7\bin>keytool -list -v -keystore C:\Development\QuickMarks\qualcode.jks -alias qualcode -storepass q1w2e3 -keypass q1w2e3
+Alias name: qualcode
+Creation date: Aug 5, 2015
+Entry type: PrivateKeyEntry
+Certificate chain length: 1
+Certificate[1]:
+Owner: L=Cleveland, ST=OH
+Issuer: L=Cleveland, ST=OH
+Serial number: 1023c9a6
+Valid from: Wed Aug 05 15:48:53 EDT 2015 until: Sun Jul 29 15:48:53 EDT 2040
+Certificate fingerprints:
+         MD5:  1D:B3:2B:2A:03:A9:CE:B4:D7:27:19:FF:83:73:38:77
+         SHA1: C0:8C:2B:FD:46:71:65:3B:4D:32:02:EF:54:AA:CD:F4:B5:04:19:A4
+         SHA256: 2E:5F:B8:67:0B:2B:02:70:FB:D2:D5:31:B3:6E:5D:02:67:A4:11:9D:7B:A8:67:8C:22:17:41:D7:9C:84:29:74
+         Signature algorithm name: SHA256withRSA
+         Version: 3
+
+Extensions:
+
+#1: ObjectId: 2.5.29.14 Criticality=false
+SubjectKeyIdentifier [
+KeyIdentifier [
+0000: C9 59 7D F9 81 CD 43 CD   DD 5A 02 55 8E C2 26 EF  .Y....C..Z.U..&.
+0010: 86 B1 19 D3                                        ....
+]
+]
+
+
+C:\Program Files (x86)\Java\jre7\bin>
