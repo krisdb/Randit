@@ -1,7 +1,10 @@
 package com.qualcode.reddoulette.activities;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -37,7 +40,7 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
     private List<RedditPost> mPosts = new ArrayList<>();
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private String mSubreddit;
-    private GoogleApiClient mGoogleApiClient;
+    private static GoogleApiClient mGoogleApiClient;
     private static int RC_SIGN_IN = 9001;
 
     private boolean mResolvingConnectionFailure = false;
@@ -71,6 +74,19 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
         });
 
         refreshContent();
+
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        Boolean test = prefs.getBoolean("initial_run", true);
+
+        if (prefs.getBoolean("initial_run", true))
+        {
+            new ConfirmationDialog().show(getSupportFragmentManager(), "myDialogFragment");
+
+            final SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean("initial_run", false);
+            editor.commit();
+        }
     }
 
     @Override
@@ -191,10 +207,15 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
                     mSwipeRefreshLayout.setRefreshing(false);
 
                 final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mActivity);
-                final int nsfw = prefs.getInt("achievement_nsfw", 0);
+                //final int nsfw = prefs.getInt("achievement_nsfw", 0);
 
                 //if (nsfw == 10)
                     //Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_nsfw));
+
+                //final int sfw = prefs.getInt("achievement_sfw", 0);
+
+                //if (sfw == 10)
+                //Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_sfw));
 
                 final int totalViews = prefs.getInt("achievement_views", 0);
 
@@ -264,21 +285,32 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
 
             mSubreddit = data2.getString("subreddit");
 
-            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-            final SharedPreferences.Editor editor = prefs.edit();
+            if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+                final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+                final SharedPreferences.Editor editor = prefs.edit();
 
-            editor.putInt("achievement_views", prefs.getInt("achievement_views", 0) + 1);
+                editor.putInt("achievement_views", prefs.getInt("achievement_views", 0) + 1);
 
-            if (data2.getBoolean("over_18"))
-            {
-                final int nsfw = prefs.getInt("achievement_nsfw", 0) + 1;
+                if (data2.getBoolean("over_18")) {
+                    final int nsfw = prefs.getInt("achievement_nsfw", 0) + 1;
 
-                if (nsfw < 11)
-                    editor.putInt("achievement_nsfw", nsfw);
+                    if (nsfw < 11)
+                        editor.putInt("achievement_nsfw", nsfw);
+                }
 
+                mSubreddit = "CameraPorn";
+
+                String test = mSubreddit.substring(mSubreddit.length() - 4, mSubreddit.length()).toLowerCase();
+
+                if (mSubreddit.length() > 4 && mSubreddit.substring(mSubreddit.length() - 4, mSubreddit.length()).toLowerCase() == "porn") {
+                    final int sfw = prefs.getInt("achievement_sfw", 0) + 1;
+
+                    if (sfw < 11)
+                        editor.putInt("achievement_sfw", sfw);
+                }
+
+                editor.commit();
             }
-
-            editor.commit();
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -337,4 +369,28 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
 
         return super.onOptionsItemSelected(item);
     }
+
+    public static class ConfirmationDialog extends android.support.v4.app.DialogFragment {
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage("Do you want to login for achievements?").setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    mGoogleApiClient.connect();
+                }
+            }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                }
+            });
+
+            AlertDialog dialog = builder.create();
+
+            return dialog;
+        }
+    }
 }
+
