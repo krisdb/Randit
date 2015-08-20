@@ -12,5 +12,11 @@ Save this file as res/values/games-ids.xml in your project.
   <string name="achievement_no_life_refresher">CgkI7ZWm2v8LEAIQBg</string>
   <string name="achievement_nsfw">CgkI7ZWm2v8LEAIQCA</string>
   <string name="achievement_sfw">CgkI7ZWm2v8LEAIQCQ</string>
+  <string name="achievement_participant_viewer">CgkI7ZWm2v8LEAIQDQ</string>
+  <string name="achievement_bronze_viewer">CgkI7ZWm2v8LEAIQDg</string>
+  <string name="achievement_silver_viewer">CgkI7ZWm2v8LEAIQDw</string>
+  <string name="achievement_gold_viewer">CgkI7ZWm2v8LEAIQEA</string>
+  <string name="achievement_well_informed_viewer">CgkI7ZWm2v8LEAIQEQ</string>
+  <string name="achievement_sticky_viewer">CgkI7ZWm2v8LEAIQEg</string>
   <string name="leaderboard_reddoulette_leaderboard">CgkI7ZWm2v8LEAIQBw</string>
 </resources>

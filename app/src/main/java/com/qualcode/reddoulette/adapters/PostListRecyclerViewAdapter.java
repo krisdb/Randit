@@ -122,6 +122,7 @@ public class PostListRecyclerViewAdapter extends RecyclerView.Adapter<PostListRe
 
         final Bundle bun = new Bundle();
         bun.putString("permalink", mPosts.get(i).getPermaLink());
+        bun.putBoolean("sticky", mPosts.get(i).IsSticky());
         details.putExtras(bun);
 
         v.getContext().startActivity(details);

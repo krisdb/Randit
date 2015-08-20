@@ -217,9 +217,9 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
                 //if (sfw == 10)
                 //Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_sfw));
 
-                final int totalViews = prefs.getInt("achievement_views", 0);
+                final int totalRefreshes = prefs.getInt("achievement_refreshes", 0);
 
-                switch (totalViews)
+                switch (totalRefreshes)
                 {
                     case 5:
                         //Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_participant_refresher));
@@ -289,7 +289,7 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
                 final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
                 final SharedPreferences.Editor editor = prefs.edit();
 
-                editor.putInt("achievement_views", prefs.getInt("achievement_views", 0) + 1);
+                editor.putInt("achievement_refreshes", prefs.getInt("achievement_refreshes", 0) + 1);
 
                 if (data2.getBoolean("over_18")) {
                     final int nsfw = prefs.getInt("achievement_nsfw", 0) + 1;
@@ -298,7 +298,7 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
                         editor.putInt("achievement_nsfw", nsfw);
                 }
 
-                mSubreddit = "CameraPorn";
+                //mSubreddit = "CameraPorn";
 
                 String test = mSubreddit.substring(mSubreddit.length() - 4, mSubreddit.length()).toLowerCase();
 

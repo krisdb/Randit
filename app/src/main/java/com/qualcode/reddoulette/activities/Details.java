@@ -2,9 +2,11 @@ package com.qualcode.reddoulette.activities;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -14,6 +16,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.games.Games;
 import com.qualcode.reddoulette.R;
 import com.qualcode.reddoulette.adapters.DetailListRecyclerViewAdapter;
 import com.qualcode.reddoulette.common.DividerItemDecoration;
@@ -36,6 +40,19 @@ public class Details extends AppCompatActivity {
     protected RecyclerView mRecyclerView;
     private String mUrl;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    private GoogleApiClient mGoogleApiClient;  // initialized in onCreate
+    private boolean mExplicitSignOut = false;
+    private boolean mInSignInFlow = false;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (!mInSignInFlow && !mExplicitSignOut) {
+            // auto sign in
+            mGoogleApiClient.connect();
+        }
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +76,44 @@ public class Details extends AppCompatActivity {
         });
 
         refreshContent();
+
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        final SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt("achievement_views", prefs.getInt("achievement_views", 0) + 1);
+
+        if (getIntent().getExtras().getBoolean("sticky"))
+        {
+            editor.putInt("achievement_views_sticky", prefs.getInt("achievement_views_sticky", 0) + 1);
+        }
+
+        editor.commit();
+
+        if (prefs.getInt("achievement_views_sticky", 0) > 50)
+        {
+            Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_participant_viewer));
+        }
+
+        final int totalViews = prefs.getInt("achievement_views", 0);
+
+        switch (totalViews)
+        {
+            case 5:
+                //Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_participant_viewer));
+                break;
+            case 50:
+                //Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_bronze_viewer));
+                break;
+            case 120:
+                //Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_silver_viewer));
+                break;
+            case 300:
+                //Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_gold_viewer));
+                break;
+            case 1000:
+                //Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_well_informed_viewer));
+                break;
+        }
+
     }
 
 
