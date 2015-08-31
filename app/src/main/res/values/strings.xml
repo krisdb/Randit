@@ -6,7 +6,7 @@
     <string name="action_share">Share</string>
     <string name="action_open_reddit">View in Reddit</string>
     <string name="action_signin">Sign In To Google</string>
-    <string name="action_signout">Sign Out Of Google</string>
+    <string name="action_signout">Sign Out</string>
     <string name="action_leaderboard">Leaderboard</string>
     <string name="action_achievements">Achievements</string>
     <string name="action_settings">Settings</string>
@@ -16,4 +16,8 @@
     <string name="sign_in_failed">Sign In Error</string>
     <string name="license_failed">License Failed</string>
 
+    <string name="gamehelper_sign_in_failed">Failed to sign in. Please check your network connection and try again.</string>
+    <string name="gamehelper_app_misconfigured">The application is incorrectly configured. Check that the package name and signing certificate match the client ID created in Developer Console. Also, if the application is not yet published, check that the account you are trying to sign in with is listed as a tester account. See logs for more information.</string>
+    <string name="gamehelper_license_failed">License check failed.</string>
+    <string name="gamehelper_unknown_error">Unknown error.</string>
 </resources>

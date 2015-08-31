@@ -35,7 +35,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Main extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener  {
+public class Main extends BaseGameActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener  {
     protected RecyclerView mRecyclerView;
     private List<RedditPost> mPosts = new ArrayList<>();
     private SwipeRefreshLayout mSwipeRefreshLayout;
@@ -76,8 +76,6 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
         refreshContent();
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-
-        Boolean test = prefs.getBoolean("initial_run", true);
 
         if (prefs.getBoolean("initial_run", true))
         {
@@ -136,6 +134,7 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
                 BaseGameUtils.showActivityResultError(this, requestCode, resultCode, R.string.signin_failure);
             }
         }
+
         invalidateOptionsMenu();
     }
 
@@ -143,10 +142,10 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
     @Override
     protected void onStart() {
         super.onStart();
-        //if (!mInSignInFlow && !mExplicitSignOut) {
+        if (!mInSignInFlow && !mExplicitSignOut) {
             // auto sign in
-            //mGoogleApiClient.connect();
-        //}
+            mGoogleApiClient.connect();
+        }
     }
 
     @Override
@@ -157,10 +156,10 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
 
     @Override
     public boolean onPrepareOptionsMenu (Menu menu) {
-        menu.getItem(2).setVisible(mSignInClicked == false); //sign in
-        menu.getItem(3).setVisible(mSignInClicked); //sign out
-        menu.getItem(4).setVisible(mSignInClicked); //leaderboard
-        menu.getItem(5).setVisible(mSignInClicked); //achievements
+        menu.getItem(2).setVisible(mGoogleApiClient.isConnected() == false); //sign in
+        menu.getItem(3).setVisible(mGoogleApiClient.isConnected()); //leaderboard
+        menu.getItem(4).setVisible(mGoogleApiClient.isConnected()); //achievements
+        menu.getItem(5).setVisible(mGoogleApiClient.isConnected()); //sign out
         return true;
     }
 
@@ -176,6 +175,16 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
         new GetPosts(this).execute();
     }
 
+    @Override
+    public void onSignInFailed() {
+
+    }
+
+    @Override
+    public void onSignInSucceeded() {
+
+    }
+
     public class GetPosts extends AsyncTask<Void, Void, Void> {
         private Activity mActivity;
 
@@ -183,61 +192,39 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
             this.mActivity = activity;
 
             mSwipeRefreshLayout.setRefreshing(true);
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            GetRandomSubreddit();
+            GetPosts();
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void unused) {
+
+            setTitle("r/".concat(mSubreddit.toLowerCase()));
+
+            final PostListRecyclerViewAdapter adapter = new PostListRecyclerViewAdapter(mPosts, mRecyclerView);
+            mRecyclerView.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+
+            if (mSwipeRefreshLayout.isRefreshing())
+                mSwipeRefreshLayout.setRefreshing(false);
+
+            if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+                Games.Achievements.increment(mGoogleApiClient, getString(R.string.achievement_participant_refresher), 1);
+                Games.Achievements.increment(mGoogleApiClient, getString(R.string.achievement_bronze_refresher), 1);
+                Games.Achievements.increment(mGoogleApiClient, getString(R.string.achievement_silver_refresher), 1);
+                Games.Achievements.increment(mGoogleApiClient, getString(R.string.achievement_gold_refresher), 1);
+                Games.Achievements.increment(mGoogleApiClient, getString(R.string.achievement_no_life_refresher), 1);
+                Games.Achievements.increment(mGoogleApiClient, getString(R.string.achievement_participant_refresher), 1);
+                Games.Achievements.increment(mGoogleApiClient, getString(R.string.achievement_no_life_refresher), 1);
             }
-
-            @Override
-            protected Void doInBackground(Void... params) {
-
-                GetRandomSubreddit();
-                GetPosts();
-
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void unused) {
-
-                setTitle("r/".concat(mSubreddit.toLowerCase()));
-
-                final PostListRecyclerViewAdapter adapter = new PostListRecyclerViewAdapter(mPosts, mRecyclerView);
-                mRecyclerView.setAdapter(adapter);
-                adapter.notifyDataSetChanged();
-
-                if (mSwipeRefreshLayout.isRefreshing())
-                    mSwipeRefreshLayout.setRefreshing(false);
-
-                final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mActivity);
-                //final int nsfw = prefs.getInt("achievement_nsfw", 0);
-
-                //if (nsfw == 10)
-                    //Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_nsfw));
-
-                //final int sfw = prefs.getInt("achievement_sfw", 0);
-
-                //if (sfw == 10)
-                //Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_sfw));
-
-                final int totalRefreshes = prefs.getInt("achievement_refreshes", 0);
-
-                switch (totalRefreshes)
-                {
-                    case 5:
-                        //Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_participant_refresher));
-                        break;
-                    case 50:
-                        //Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_bronze_refresher));
-                        break;
-                    case 120:
-                        //Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_silver_refresher));
-                        break;
-                    case 300:
-                        //Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_gold_refresher));
-                        break;
-                    case 1000:
-                        //Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_no_life_refresher));
-                        break;
-                }
-            }
+        }
     }
 
     private void GetPosts()
@@ -286,30 +273,17 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
             mSubreddit = data2.getString("subreddit");
 
             if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
-                final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-                final SharedPreferences.Editor editor = prefs.edit();
-
-                editor.putInt("achievement_refreshes", prefs.getInt("achievement_refreshes", 0) + 1);
-
                 if (data2.getBoolean("over_18")) {
-                    final int nsfw = prefs.getInt("achievement_nsfw", 0) + 1;
-
-                    if (nsfw < 11)
-                        editor.putInt("achievement_nsfw", nsfw);
+                    Games.Achievements.increment(mGoogleApiClient, getString(R.string.achievement_nsfw), 1);
                 }
 
                 //mSubreddit = "CameraPorn";
 
-                String test = mSubreddit.substring(mSubreddit.length() - 4, mSubreddit.length()).toLowerCase();
+                //String test = mSubreddit.substring(mSubreddit.length() - 4, mSubreddit.length()).toLowerCase();
 
-                if (mSubreddit.length() > 4 && mSubreddit.substring(mSubreddit.length() - 4, mSubreddit.length()).toLowerCase() == "porn") {
-                    final int sfw = prefs.getInt("achievement_sfw", 0) + 1;
-
-                    if (sfw < 11)
-                        editor.putInt("achievement_sfw", sfw);
-                }
-
-                editor.commit();
+                //if (mSubreddit.length() > 4 && mSubreddit.substring(mSubreddit.length() - 4, mSubreddit.length()).toLowerCase() == "porn") {
+                //Games.Achievements.increment(mGoogleApiClient, getString(R.string.achievement_sfw), 1);
+                //}
             }
 
         } catch (JSONException e) {

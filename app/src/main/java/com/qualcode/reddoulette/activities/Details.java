@@ -16,10 +16,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
 import com.qualcode.reddoulette.R;
 import com.qualcode.reddoulette.adapters.DetailListRecyclerViewAdapter;
+import com.qualcode.reddoulette.common.BaseGameUtils;
 import com.qualcode.reddoulette.common.DividerItemDecoration;
 import com.qualcode.reddoulette.common.Utilities;
 import com.qualcode.reddoulette.models.RedditComment;
@@ -34,25 +36,13 @@ import java.util.Date;
 import java.util.List;
 
 
-public class Details extends AppCompatActivity {
+public class Details extends BaseGameActivity implements GoogleApiClient.ConnectionCallbacks {
 
     private  List<RedditObject> mObjects = new ArrayList<>();
     protected RecyclerView mRecyclerView;
     private String mUrl;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private GoogleApiClient mGoogleApiClient;  // initialized in onCreate
-    private boolean mExplicitSignOut = false;
-    private boolean mInSignInFlow = false;
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if (!mInSignInFlow && !mExplicitSignOut) {
-            // auto sign in
-            mGoogleApiClient.connect();
-        }
-    }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,9 +54,10 @@ public class Details extends AppCompatActivity {
         mRecyclerView.addItemDecoration(new DividerItemDecoration(this));
 
         mUrl = getIntent().getExtras().getString("permalink");
-
         setTitle(R.string.app_name);
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         mSwipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.detailsRefreshLayout);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -77,49 +68,40 @@ public class Details extends AppCompatActivity {
 
         refreshContent();
 
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        final SharedPreferences.Editor editor = prefs.edit();
-        editor.putInt("achievement_views", prefs.getInt("achievement_views", 0) + 1);
-
-        if (getIntent().getExtras().getBoolean("sticky"))
-        {
-            editor.putInt("achievement_views_sticky", prefs.getInt("achievement_views_sticky", 0) + 1);
-        }
-
-        editor.commit();
-
-        if (prefs.getInt("achievement_views_sticky", 0) > 50)
-        {
-            Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_participant_viewer));
-        }
-
-        final int totalViews = prefs.getInt("achievement_views", 0);
-
-        switch (totalViews)
-        {
-            case 5:
-                //Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_participant_viewer));
-                break;
-            case 50:
-                //Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_bronze_viewer));
-                break;
-            case 120:
-                //Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_silver_viewer));
-                break;
-            case 300:
-                //Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_gold_viewer));
-                break;
-            case 1000:
-                //Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_well_informed_viewer));
-                break;
-        }
-
+        mGoogleApiClient = getApiClient();
+        mGoogleApiClient.connect();
     }
-
 
     private void refreshContent() {
         mObjects = new ArrayList<>();
         new GetDetails(this).execute();
+    }
+
+    @Override
+    public void onSignInFailed() {
+
+    }
+
+    @Override
+    public void onSignInSucceeded() {
+
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+            Games.Achievements.increment(mGoogleApiClient, getString(R.string.achievement_participant_viewer), 1);
+            Games.Achievements.increment(mGoogleApiClient, getString(R.string.achievement_bronze_viewer), 1);
+            Games.Achievements.increment(mGoogleApiClient, getString(R.string.achievement_silver_viewer), 1);
+            Games.Achievements.increment(mGoogleApiClient, getString(R.string.achievement_gold_viewer), 1);
+            Games.Achievements.increment(mGoogleApiClient, getString(R.string.achievement_well_informed_viewer), 1);
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        mGoogleApiClient.connect();
+
     }
 
     public class GetDetails extends AsyncTask<Void, Void, Void> {

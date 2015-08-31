@@ -4,19 +4,18 @@ Google Play game services IDs.
 Save this file as res/values/games-ids.xml in your project.
 -->
 <resources>
-  <string name="app_id">412237794029</string>
-  <string name="achievement_participant_refresher">CgkI7ZWm2v8LEAIQAg</string>
-  <string name="achievement_bronze_refresher">CgkI7ZWm2v8LEAIQAw</string>
-  <string name="achievement_silver_refresher">CgkI7ZWm2v8LEAIQBA</string>
-  <string name="achievement_gold_refresher">CgkI7ZWm2v8LEAIQBQ</string>
-  <string name="achievement_no_life_refresher">CgkI7ZWm2v8LEAIQBg</string>
-  <string name="achievement_nsfw">CgkI7ZWm2v8LEAIQCA</string>
-  <string name="achievement_sfw">CgkI7ZWm2v8LEAIQCQ</string>
-  <string name="achievement_participant_viewer">CgkI7ZWm2v8LEAIQDQ</string>
-  <string name="achievement_bronze_viewer">CgkI7ZWm2v8LEAIQDg</string>
-  <string name="achievement_silver_viewer">CgkI7ZWm2v8LEAIQDw</string>
-  <string name="achievement_gold_viewer">CgkI7ZWm2v8LEAIQEA</string>
-  <string name="achievement_well_informed_viewer">CgkI7ZWm2v8LEAIQEQ</string>
-  <string name="achievement_sticky_viewer">CgkI7ZWm2v8LEAIQEg</string>
-  <string name="leaderboard_reddoulette_leaderboard">CgkI7ZWm2v8LEAIQBw</string>
+  <string name="app_id">718298011166</string>
+  <string name="achievement_participant_refresher">CgkInqyX7_MUEAIQAQ</string>
+  <string name="achievement_bronze_refresher">CgkInqyX7_MUEAIQAg</string>
+  <string name="achievement_silver_refresher">CgkInqyX7_MUEAIQAw</string>
+  <string name="achievement_gold_refresher">CgkInqyX7_MUEAIQBA</string>
+  <string name="achievement_no_life_refresher">CgkInqyX7_MUEAIQBQ</string>
+  <string name="achievement_nsfw">CgkInqyX7_MUEAIQBw</string>
+  <string name="achievement_sfw">CgkInqyX7_MUEAIQCA</string>
+  <string name="achievement_participant_viewer">CgkInqyX7_MUEAIQCQ</string>
+  <string name="achievement_bronze_viewer">CgkInqyX7_MUEAIQCg</string>
+  <string name="achievement_silver_viewer">CgkInqyX7_MUEAIQCw</string>
+  <string name="achievement_gold_viewer">CgkInqyX7_MUEAIQDA</string>
+  <string name="achievement_well_informed_viewer">CgkInqyX7_MUEAIQDQ</string>
+  <string name="achievement_sticky_viewer">CgkInqyX7_MUEAIQDg</string>
 </resources>
