@@ -18,4 +18,6 @@ Save this file as res/values/games-ids.xml in your project.
   <string name="achievement_gold_viewer">CgkInqyX7_MUEAIQDA</string>
   <string name="achievement_well_informed_viewer">CgkInqyX7_MUEAIQDQ</string>
   <string name="achievement_sticky_viewer">CgkInqyX7_MUEAIQDg</string>
+  <string name="leaderboard_most_subreddits_viewed">CgkInqyX7_MUEAIQDw</string>
+  <string name="leaderboard_most_posts_viewed">CgkInqyX7_MUEAIQEA</string>
 </resources>

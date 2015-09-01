@@ -88,58 +88,6 @@ public class Main extends BaseGameActivity implements GoogleApiClient.Connection
     }
 
     @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        if (mResolvingConnectionFailure) {
-            // already resolving
-            return;
-        }
-
-        // if the sign-in button was clicked or if auto sign-in is enabled,
-        // launch the sign-in flow
-        if (mSignInClicked || mAutoStartSignInflow) {
-            mAutoStartSignInflow = false;
-            mSignInClicked = false;
-            mResolvingConnectionFailure = true;
-
-            // Attempt to resolve the connection failure using BaseGameUtils.
-            // The R.string.signin_other_error value should reference a generic
-            // error string in your strings.xml file, such as "There was
-            // an issue with sign-in, please try again later."
-            if (!BaseGameUtils.resolveConnectionFailure(this, mGoogleApiClient, connectionResult, RC_SIGN_IN, "Error")) {
-                mResolvingConnectionFailure = false;
-            }
-        }
-
-        // Put code here to display the sign-in button
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        // Attempt to reconnect
-        mGoogleApiClient.connect();
-    }
-
-    protected void onActivityResult(int requestCode, int resultCode,
-                                    Intent intent) {
-        if (requestCode == RC_SIGN_IN) {
-            mSignInClicked = false;
-            mResolvingConnectionFailure = false;
-            if (resultCode == RESULT_OK) {
-                mGoogleApiClient.connect();
-            } else {
-                // Bring up an error dialog to alert the user that sign-in
-                // failed. The R.string.signin_failure should reference an error
-                // string in your strings.xml file that tells the user they
-                // could not be signed in, such as "Unable to sign in."
-                BaseGameUtils.showActivityResultError(this, requestCode, resultCode, R.string.signin_failure);
-            }
-        }
-
-        invalidateOptionsMenu();
-    }
-
-
-    @Override
     protected void onStart() {
         super.onStart();
         if (!mInSignInFlow && !mExplicitSignOut) {
@@ -154,36 +102,12 @@ public class Main extends BaseGameActivity implements GoogleApiClient.Connection
         mGoogleApiClient.disconnect();
     }
 
-    @Override
-    public boolean onPrepareOptionsMenu (Menu menu) {
-        menu.getItem(2).setVisible(mGoogleApiClient.isConnected() == false); //sign in
-        menu.getItem(3).setVisible(mGoogleApiClient.isConnected()); //leaderboard
-        menu.getItem(4).setVisible(mGoogleApiClient.isConnected()); //achievements
-        menu.getItem(5).setVisible(mGoogleApiClient.isConnected()); //sign out
-        return true;
-    }
-
-    @Override
-    public void onConnected(Bundle connectionHint) {
-        // The player is signed in. Hide the sign-in button and allow the
-        // player to proceed.
-    }
-
 
     private void refreshContent() {
         mPosts = new ArrayList<>();
         new GetPosts(this).execute();
     }
 
-    @Override
-    public void onSignInFailed() {
-
-    }
-
-    @Override
-    public void onSignInSucceeded() {
-
-    }
 
     public class GetPosts extends AsyncTask<Void, Void, Void> {
         private Activity mActivity;
@@ -223,6 +147,16 @@ public class Main extends BaseGameActivity implements GoogleApiClient.Connection
                 Games.Achievements.increment(mGoogleApiClient, getString(R.string.achievement_no_life_refresher), 1);
                 Games.Achievements.increment(mGoogleApiClient, getString(R.string.achievement_participant_refresher), 1);
                 Games.Achievements.increment(mGoogleApiClient, getString(R.string.achievement_no_life_refresher), 1);
+
+                final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+                final int totalViews = prefs.getInt("achievement_subreddit_views", 0) + 1;
+
+                final SharedPreferences.Editor editor = prefs.edit();
+                editor.putInt("achievement_subreddit_views", totalViews);
+                editor.commit();
+
+                Games.Leaderboards.submitScore(mGoogleApiClient, getString(R.string.leaderboard_most_subreddits_viewed), totalViews);
             }
         }
     }
@@ -291,6 +225,69 @@ public class Main extends BaseGameActivity implements GoogleApiClient.Connection
         }
 
         return null;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu (Menu menu) {
+        menu.getItem(2).setVisible(mGoogleApiClient.isConnected() == false); //sign in
+        menu.getItem(3).setVisible(mGoogleApiClient.isConnected()); //leaderboard
+        menu.getItem(4).setVisible(mGoogleApiClient.isConnected()); //achievements
+        menu.getItem(5).setVisible(mGoogleApiClient.isConnected()); //sign out
+        return true;
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
+        if (mResolvingConnectionFailure) return;
+
+        if (mSignInClicked || mAutoStartSignInflow) {
+            mAutoStartSignInflow = false;
+            mSignInClicked = false;
+            mResolvingConnectionFailure = true;
+
+            if (!BaseGameUtils.resolveConnectionFailure(this, mGoogleApiClient, connectionResult, RC_SIGN_IN, "Error")) {
+                mResolvingConnectionFailure = false;
+            }
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        // Attempt to reconnect
+        mGoogleApiClient.connect();
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        if (requestCode == RC_SIGN_IN) {
+            mSignInClicked = false;
+            mResolvingConnectionFailure = false;
+            if (resultCode == RESULT_OK) {
+                mGoogleApiClient.connect();
+            } else {
+                BaseGameUtils.showActivityResultError(this, requestCode, resultCode, R.string.signin_failure);
+            }
+        }
+
+        invalidateOptionsMenu();
+    }
+
+
+    @Override
+    public void onConnected(Bundle connectionHint) {
+        // The player is signed in. Hide the sign-in button and allow the
+        // player to proceed.
+    }
+
+
+    @Override
+    public void onSignInFailed() {
+
+    }
+
+    @Override
+    public void onSignInSucceeded() {
+
     }
 
     @Override

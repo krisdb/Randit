@@ -17,12 +17,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
 import com.qualcode.reddoulette.R;
 import com.qualcode.reddoulette.adapters.DetailListRecyclerViewAdapter;
 import com.qualcode.reddoulette.common.BaseGameUtils;
 import com.qualcode.reddoulette.common.DividerItemDecoration;
+import com.qualcode.reddoulette.common.GameHelper;
 import com.qualcode.reddoulette.common.Utilities;
 import com.qualcode.reddoulette.models.RedditComment;
 import com.qualcode.reddoulette.models.RedditObject;
@@ -69,8 +71,26 @@ public class Details extends BaseGameActivity implements GoogleApiClient.Connect
         refreshContent();
 
         mGoogleApiClient = getApiClient();
-        mGoogleApiClient.connect();
-    }
+
+        Boolean test = isSignedIn();
+
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+            Games.Achievements.increment(mGoogleApiClient, getString(R.string.achievement_participant_viewer), 1);
+            Games.Achievements.increment(mGoogleApiClient, getString(R.string.achievement_bronze_viewer), 1);
+            Games.Achievements.increment(mGoogleApiClient, getString(R.string.achievement_silver_viewer), 1);
+            Games.Achievements.increment(mGoogleApiClient, getString(R.string.achievement_gold_viewer), 1);
+            Games.Achievements.increment(mGoogleApiClient, getString(R.string.achievement_well_informed_viewer), 1);
+
+            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+            final int totalViews = prefs.getInt("achievement_post_views", 0) + 1;
+
+            final SharedPreferences.Editor editor = prefs.edit();
+            editor.putInt("achievement_post_views", totalViews);
+            editor.commit();
+
+            Games.Leaderboards.submitScore(mGoogleApiClient, getString(R.string.leaderboard_most_posts_viewed), totalViews);
+        }    }
 
     private void refreshContent() {
         mObjects = new ArrayList<>();
@@ -95,6 +115,16 @@ public class Details extends BaseGameActivity implements GoogleApiClient.Connect
             Games.Achievements.increment(mGoogleApiClient, getString(R.string.achievement_silver_viewer), 1);
             Games.Achievements.increment(mGoogleApiClient, getString(R.string.achievement_gold_viewer), 1);
             Games.Achievements.increment(mGoogleApiClient, getString(R.string.achievement_well_informed_viewer), 1);
+
+            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+            final int totalViews = prefs.getInt("achievement_post_views", 0) + 1;
+
+            final SharedPreferences.Editor editor = prefs.edit();
+            editor.putInt("achievement_post_views", totalViews);
+            editor.commit();
+
+            Games.Leaderboards.submitScore(mGoogleApiClient, getString(R.string.leaderboard_most_posts_viewed), totalViews);
         }
     }
 
