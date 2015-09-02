@@ -55,15 +55,12 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-
-        if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("signedout", false) == false) {
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .addApi(Games.API)
-                    .addScope(Games.SCOPE_GAMES)
-                    .build();
-        }
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(Games.API)
+                .addScope(Games.SCOPE_GAMES)
+                .build();
 
         mRecyclerView = (RecyclerView)findViewById(R.id.postlist);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -97,14 +94,15 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
         super.onStart();
         if (mGoogleApiClient != null && !mInSignInFlow && !mExplicitSignOut) {
             // auto sign in
-            mGoogleApiClient.connect();
+            if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("signedout", false) == false)
+                mGoogleApiClient.connect();
         }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        if (mGoogleApiClient != null && mGoogleApiClient.isConnected())
+        if (mGoogleApiClient.isConnected())
             mGoogleApiClient.disconnect();
     }
 
@@ -228,10 +226,10 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
 
     @Override
     public boolean onPrepareOptionsMenu (Menu menu) {
-        menu.getItem(2).setVisible(mGoogleApiClient == null || mGoogleApiClient.isConnected() == false); //sign in
-        menu.getItem(3).setVisible(mGoogleApiClient != null && mGoogleApiClient.isConnected()); //leaderboard
-        menu.getItem(4).setVisible(mGoogleApiClient != null && mGoogleApiClient.isConnected()); //achievements
-        menu.getItem(5).setVisible(mGoogleApiClient != null && mGoogleApiClient.isConnected()); //sign out
+        menu.getItem(2).setVisible(mGoogleApiClient.isConnected() == false); //sign in
+        menu.getItem(3).setVisible(mGoogleApiClient.isConnected()); //leaderboard
+        menu.getItem(4).setVisible(mGoogleApiClient.isConnected()); //achievements
+        menu.getItem(5).setVisible(mGoogleApiClient.isConnected()); //sign out
         return true;
     }
 
@@ -356,26 +354,22 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
         editor.putBoolean("signedout", true);
         editor.commit();
 
-        //mSwipeRefreshLayout.setRefreshing(true);
-        //Games.signOut(mGoogleApiClient);
+        Games.signOut(mGoogleApiClient);
         mSignInClicked = false;
         mGoogleApiClient.disconnect();
+
+        invalidateOptionsMenu();
     }
 
     private void SignIn()
     {
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(Games.API)
-                .addScope(Games.SCOPE_GAMES)
-                .build();
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         final SharedPreferences.Editor editor = prefs.edit();
         editor.putBoolean("signedout", false);
         editor.commit();
-        mSignInClicked = true;
+
         mGoogleApiClient.connect();
+        mSignInClicked = true;
     }
 }
 

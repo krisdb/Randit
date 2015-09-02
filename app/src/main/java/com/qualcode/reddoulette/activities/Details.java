@@ -75,14 +75,12 @@ public class Details extends AppCompatActivity implements GoogleApiClient.Connec
 
         refreshContent();
 
-        if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("signedout", false) == false) {
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .addApi(Games.API)
-                    .addScope(Games.SCOPE_GAMES)
-                    .build();
-        }
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(Games.API)
+                .addScope(Games.SCOPE_GAMES)
+                .build();
     }
 
     private void refreshContent() {
@@ -150,9 +148,11 @@ public class Details extends AppCompatActivity implements GoogleApiClient.Connec
         super.onStart();
         if (mGoogleApiClient != null && !mInSignInFlow && !mExplicitSignOut) {
             // auto sign in
-            mGoogleApiClient.connect();
+            if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("signedout", false) == false)
+                mGoogleApiClient.connect();
         }
     }
+
 
     @Override
     protected void onStop() {
