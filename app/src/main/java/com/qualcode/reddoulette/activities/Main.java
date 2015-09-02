@@ -135,7 +135,7 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
 
             setTitle("r/".concat(mSubreddit.toLowerCase()));
 
-            final PostListRecyclerViewAdapter adapter = new PostListRecyclerViewAdapter(mPosts, mGoogleApiClient, getApplicationContext());
+            final PostListRecyclerViewAdapter adapter = new PostListRecyclerViewAdapter(mPosts, mGoogleApiClient, mSubreddit, getApplicationContext());
             mRecyclerView.setAdapter(adapter);
             adapter.notifyDataSetChanged();
 

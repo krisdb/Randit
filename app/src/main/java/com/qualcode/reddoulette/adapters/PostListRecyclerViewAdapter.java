@@ -31,16 +31,17 @@ public class PostListRecyclerViewAdapter extends RecyclerView.Adapter<PostListRe
     private List<RedditPost> mPosts;
     private GoogleApiClient mGoogleApiClient;
     private Context mContext;
-
+    private String mSubreddit;
 
     public PostListRecyclerViewAdapter() {
         mPosts = new ArrayList<>();
     }
 
-    public PostListRecyclerViewAdapter(List<RedditPost> posts, GoogleApiClient api, Context ctx) {
+    public PostListRecyclerViewAdapter(List<RedditPost> posts, GoogleApiClient api, String subreddit, Context ctx) {
         mPosts = posts;
         mGoogleApiClient = api;
         mContext = ctx;
+        mSubreddit = subreddit;
     }
 
     @Override
@@ -167,6 +168,7 @@ public class PostListRecyclerViewAdapter extends RecyclerView.Adapter<PostListRe
         final Bundle bun = new Bundle();
         bun.putString("permalink", mPosts.get(i).getPermaLink());
         bun.putBoolean("sticky", mPosts.get(i).IsSticky());
+        bun.putString("subreddit", mSubreddit);
         details.putExtras(bun);
 
         v.getContext().startActivity(details);
