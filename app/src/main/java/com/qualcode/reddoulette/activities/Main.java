@@ -35,13 +35,14 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Main extends BaseGameActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener  {
+public class Main extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener  {
     protected RecyclerView mRecyclerView;
     private List<RedditPost> mPosts = new ArrayList<>();
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private String mSubreddit;
     private static GoogleApiClient mGoogleApiClient;
     private static int RC_SIGN_IN = 9001;
+    private static int REQUEST_LEADERBOARD = 42374;
 
     private boolean mResolvingConnectionFailure = false;
     private boolean mAutoStartSignInflow = true;
@@ -54,16 +55,20 @@ public class Main extends BaseGameActivity implements GoogleApiClient.Connection
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(Games.API)
-                .addScope(Games.SCOPE_GAMES)
-                .build();
+
+        if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("signedout", false) == false) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(Games.API)
+                    .addScope(Games.SCOPE_GAMES)
+                    .build();
+        }
 
         mRecyclerView = (RecyclerView)findViewById(R.id.postlist);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(this));
+        mRecyclerView.setAdapter(new PostListRecyclerViewAdapter());
 
         mSwipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.mainRefreshLayout);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -90,7 +95,7 @@ public class Main extends BaseGameActivity implements GoogleApiClient.Connection
     @Override
     protected void onStart() {
         super.onStart();
-        if (!mInSignInFlow && !mExplicitSignOut) {
+        if (mGoogleApiClient != null && !mInSignInFlow && !mExplicitSignOut) {
             // auto sign in
             mGoogleApiClient.connect();
         }
@@ -99,9 +104,9 @@ public class Main extends BaseGameActivity implements GoogleApiClient.Connection
     @Override
     protected void onStop() {
         super.onStop();
-        mGoogleApiClient.disconnect();
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected())
+            mGoogleApiClient.disconnect();
     }
-
 
     private void refreshContent() {
         mPosts = new ArrayList<>();
@@ -132,7 +137,7 @@ public class Main extends BaseGameActivity implements GoogleApiClient.Connection
 
             setTitle("r/".concat(mSubreddit.toLowerCase()));
 
-            final PostListRecyclerViewAdapter adapter = new PostListRecyclerViewAdapter(mPosts, mRecyclerView);
+            final PostListRecyclerViewAdapter adapter = new PostListRecyclerViewAdapter(mPosts, mGoogleApiClient, getApplicationContext());
             mRecyclerView.setAdapter(adapter);
             adapter.notifyDataSetChanged();
 
@@ -189,8 +194,7 @@ public class Main extends BaseGameActivity implements GoogleApiClient.Connection
         }
     }
 
-    private Void GetRandomSubreddit()
-    {
+    private Void GetRandomSubreddit() {
         String json = Utilities.GetRemoteJSON(getString(R.string.url_random));
 
         JSONObject obj;
@@ -211,13 +215,8 @@ public class Main extends BaseGameActivity implements GoogleApiClient.Connection
                     Games.Achievements.increment(mGoogleApiClient, getString(R.string.achievement_nsfw), 1);
                 }
 
-                //mSubreddit = "CameraPorn";
-
-                //String test = mSubreddit.substring(mSubreddit.length() - 4, mSubreddit.length()).toLowerCase();
-
-                //if (mSubreddit.length() > 4 && mSubreddit.substring(mSubreddit.length() - 4, mSubreddit.length()).toLowerCase() == "porn") {
-                //Games.Achievements.increment(mGoogleApiClient, getString(R.string.achievement_sfw), 1);
-                //}
+                if (mSubreddit.length() > 4 && mSubreddit.substring(mSubreddit.length() - 4, mSubreddit.length()).toLowerCase().equals("porn"))
+                    Games.Achievements.increment(mGoogleApiClient, getString(R.string.achievement_sfw), 1);
             }
 
         } catch (JSONException e) {
@@ -229,10 +228,10 @@ public class Main extends BaseGameActivity implements GoogleApiClient.Connection
 
     @Override
     public boolean onPrepareOptionsMenu (Menu menu) {
-        menu.getItem(2).setVisible(mGoogleApiClient.isConnected() == false); //sign in
-        menu.getItem(3).setVisible(mGoogleApiClient.isConnected()); //leaderboard
-        menu.getItem(4).setVisible(mGoogleApiClient.isConnected()); //achievements
-        menu.getItem(5).setVisible(mGoogleApiClient.isConnected()); //sign out
+        menu.getItem(2).setVisible(mGoogleApiClient == null || mGoogleApiClient.isConnected() == false); //sign in
+        menu.getItem(3).setVisible(mGoogleApiClient != null && mGoogleApiClient.isConnected()); //leaderboard
+        menu.getItem(4).setVisible(mGoogleApiClient != null && mGoogleApiClient.isConnected()); //achievements
+        menu.getItem(5).setVisible(mGoogleApiClient != null && mGoogleApiClient.isConnected()); //sign out
         return true;
     }
 
@@ -262,32 +261,21 @@ public class Main extends BaseGameActivity implements GoogleApiClient.Connection
         if (requestCode == RC_SIGN_IN) {
             mSignInClicked = false;
             mResolvingConnectionFailure = false;
-            if (resultCode == RESULT_OK) {
+
+            if (resultCode == RESULT_OK)
                 mGoogleApiClient.connect();
-            } else {
+            else
                 BaseGameUtils.showActivityResultError(this, requestCode, resultCode, R.string.signin_failure);
-            }
         }
 
-        invalidateOptionsMenu();
+        if (mSwipeRefreshLayout.isRefreshing())
+            mSwipeRefreshLayout.setRefreshing(false);
     }
 
 
     @Override
     public void onConnected(Bundle connectionHint) {
-        // The player is signed in. Hide the sign-in button and allow the
-        // player to proceed.
-    }
-
-
-    @Override
-    public void onSignInFailed() {
-
-    }
-
-    @Override
-    public void onSignInSucceeded() {
-
+        invalidateOptionsMenu();
     }
 
     @Override
@@ -316,25 +304,22 @@ public class Main extends BaseGameActivity implements GoogleApiClient.Connection
         }
 
         if (id == R.id.action_signin) {
-            mSignInClicked = true;
-            mGoogleApiClient.connect();
+            SignIn();
             return true;
         }
 
         if (id == R.id.action_signout) {
-            Games.signOut(mGoogleApiClient);
-            mSignInClicked = false;
-            mGoogleApiClient.disconnect();
+            SignOut();
             return true;
         }
 
         if (id == R.id.action_leaderboard) {
-            startActivityForResult(Games.Leaderboards.getAllLeaderboardsIntent(mGoogleApiClient), RC_SIGN_IN);
+            startActivityForResult(Games.Leaderboards.getAllLeaderboardsIntent(mGoogleApiClient), REQUEST_LEADERBOARD);
             return true;
         }
 
         if (id == R.id.action_achievements) {
-            startActivityForResult(Games.Achievements.getAchievementsIntent(mGoogleApiClient), RC_SIGN_IN);
+            startActivityForResult(Games.Achievements.getAchievementsIntent(mGoogleApiClient), REQUEST_LEADERBOARD);
             return true;
         }
 
@@ -362,6 +347,35 @@ public class Main extends BaseGameActivity implements GoogleApiClient.Connection
 
             return dialog;
         }
+    }
+
+    private void SignOut()
+    {
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        final SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean("signedout", true);
+        editor.commit();
+
+        //mSwipeRefreshLayout.setRefreshing(true);
+        //Games.signOut(mGoogleApiClient);
+        mSignInClicked = false;
+        mGoogleApiClient.disconnect();
+    }
+
+    private void SignIn()
+    {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(Games.API)
+                .addScope(Games.SCOPE_GAMES)
+                .build();
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        final SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean("signedout", false);
+        editor.commit();
+        mSignInClicked = true;
+        mGoogleApiClient.connect();
     }
 }
 

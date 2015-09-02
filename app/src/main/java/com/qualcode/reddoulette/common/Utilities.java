@@ -72,7 +72,8 @@ public class Utilities {
         return post;
     }
 
-        public static String GetRemoteJSON(final String url)
+
+    public static String GetRemoteJSON(final String url)
     {
         URL obj;
         try {

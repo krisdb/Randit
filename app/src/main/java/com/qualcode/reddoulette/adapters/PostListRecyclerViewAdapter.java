@@ -1,10 +1,14 @@
 package com.qualcode.reddoulette.adapters;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,19 +16,31 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.games.Games;
 import com.qualcode.reddoulette.R;
 import com.qualcode.reddoulette.activities.Details;
 import com.qualcode.reddoulette.models.RedditPost;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PostListRecyclerViewAdapter extends RecyclerView.Adapter<PostListRecyclerViewAdapter.PostListViewHolder> {
 
-    List<RedditPost> mPosts;
-    RecyclerView mRecyclerView;
+    private List<RedditPost> mPosts;
+    private GoogleApiClient mGoogleApiClient;
+    private Context mContext;
 
-    public PostListRecyclerViewAdapter(List<RedditPost> posts, RecyclerView rv) {
+
+    public PostListRecyclerViewAdapter() {
+        mPosts = new ArrayList<>();
+    }
+
+    public PostListRecyclerViewAdapter(List<RedditPost> posts, GoogleApiClient api, Context ctx) {
         mPosts = posts;
+        mGoogleApiClient = api;
+        mContext = ctx;
     }
 
     @Override
@@ -69,6 +85,7 @@ public class PostListRecyclerViewAdapter extends RecyclerView.Adapter<PostListRe
             @Override
             public void onClick(View v) {
                 SelfIntent(v, i);
+                RecordAchievement(mPosts.get(i));
             }
         });
 
@@ -102,6 +119,7 @@ public class PostListRecyclerViewAdapter extends RecyclerView.Adapter<PostListRe
                 @Override
                 public void onClick(View v) {
                     SelfIntent(v, i);
+                    RecordAchievement(mPosts.get(i));
                 }
             });
         }
@@ -110,10 +128,36 @@ public class PostListRecyclerViewAdapter extends RecyclerView.Adapter<PostListRe
                 @Override
                 public void onClick(View v) {
                     v.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(mPosts.get(i).getUrl())));
+                    RecordAchievement(mPosts.get(i));
                 }
             });
             //personViewHolder.domain.setVisibility(View.GONE);
         }
+    }
+
+    private void RecordAchievement(RedditPost post)
+    {
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+            Games.Achievements.increment(mGoogleApiClient, mContext.getString(R.string.achievement_participant_viewer), 1);
+            Games.Achievements.increment(mGoogleApiClient, mContext.getString(R.string.achievement_bronze_viewer), 1);
+            Games.Achievements.increment(mGoogleApiClient, mContext.getString(R.string.achievement_silver_viewer), 1);
+            Games.Achievements.increment(mGoogleApiClient, mContext.getString(R.string.achievement_gold_viewer), 1);
+            Games.Achievements.increment(mGoogleApiClient, mContext.getString(R.string.achievement_well_informed_viewer), 1);
+
+            if (post.isSticky)
+                Games.Achievements.increment(mGoogleApiClient, mContext.getString(R.string.achievement_sticky_viewer), 1);
+
+            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+
+            final int totalViews = prefs.getInt("achievement_post_views", 0) + 1;
+
+            final SharedPreferences.Editor editor = prefs.edit();
+            editor.putInt("achievement_post_views", totalViews);
+            editor.commit();
+
+            Games.Leaderboards.submitScore(mGoogleApiClient, mContext.getString(R.string.leaderboard_most_posts_viewed), totalViews);
+        }
+
     }
 
     private void SelfIntent(final View v, final int i)

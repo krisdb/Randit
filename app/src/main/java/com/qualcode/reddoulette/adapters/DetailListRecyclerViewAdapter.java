@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.qualcode.reddoulette.R;
 import com.qualcode.reddoulette.models.RedditObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DetailListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -25,6 +26,10 @@ public class DetailListRecyclerViewAdapter extends RecyclerView.Adapter<Recycler
     }
 
     private List<RedditObject> mObjects;
+
+    public DetailListRecyclerViewAdapter()
+    {
+    }
 
     public DetailListRecyclerViewAdapter(List<RedditObject> objects) {
         mObjects = objects;
@@ -42,7 +47,7 @@ public class DetailListRecyclerViewAdapter extends RecyclerView.Adapter<Recycler
 
     @Override
     public int getItemCount() {
-        return mObjects.get(1).getComments().size() + 1;
+        return mObjects != null ? mObjects.get(1).getComments().size() + 1 : 0;
     }
 
     @Override
