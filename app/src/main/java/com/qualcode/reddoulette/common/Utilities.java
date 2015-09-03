@@ -13,8 +13,10 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 
 public class Utilities {
@@ -70,6 +72,11 @@ public class Utilities {
             e.printStackTrace();
         }
         return post;
+    }
+
+    public static Boolean ArrayContains(String[] array, String value)
+    {
+        return Arrays.asList(array).contains(value);
     }
 
 

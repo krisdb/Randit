@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="subreddits_android">
+        <item>android</item>
+        <item>androiddev</item>
+        <item>androidgaming</item>
+        <item>androidapps</item>
+        <item>androidthemes</item>
+        <item>androidquestions</item>
+        <item>androidappreviews</item>
+        <item>androidquestions</item>
+        <item>freegamesonandroid</item>
+        <item>androidwear</item>
+        <item>pickanandroidforme</item>
+        <item>emulationonandroid</item>
+        <item>androidcirclejerk</item>
+        <item>androidmasterrace</item>
+        <item>moronicmondayandroid</item>
+        <item>shittyandroidreviews</item>
+        <item>android_living</item>
+        <item>paranoid_android</item>
+    </string-array>
+
+    <string-array name="subreddits_apple">
+        <item>apple</item>
+        <item>apple2</item>
+        <item>applewatch</item>
+        <item>apple_watch</item>
+        <item>apple_news</item>
+        <item>vintageapple</item>
+        <item>appleenthusiasts</item>
+        <item>ih8apple</item>
+        <item>applemusic</item>
+        <item>apple_diy</item>
+        <item>appletv</item>
+        <item>appletechs</item>
+        <item>applewatchsupport</item>
+        <item>applebandmarket</item>
+        <item>applewatchprogramming</item>
+    </string-array>
+</resources>

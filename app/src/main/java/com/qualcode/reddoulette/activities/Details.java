@@ -61,7 +61,7 @@ public class Details extends AppCompatActivity implements GoogleApiClient.Connec
         mRecyclerView.setAdapter(new DetailListRecyclerViewAdapter());
 
         mUrl = getIntent().getExtras().getString("permalink");
-        setTitle("r/".concat((getIntent().getExtras().getString("subreddit").toLowerCase())));
+        setTitle("r/".concat((getIntent().getExtras().getString("subreddit"))));
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 

@@ -76,17 +76,6 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
         });
 
         refreshContent();
-
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-
-        if (prefs.getBoolean("initial_run", true))
-        {
-            new ConfirmationDialog().show(getSupportFragmentManager(), "myDialogFragment");
-
-            final SharedPreferences.Editor editor = prefs.edit();
-            editor.putBoolean("initial_run", false);
-            editor.commit();
-        }
     }
 
     @Override
@@ -96,6 +85,18 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
             // auto sign in
             if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("signedout", false) == false)
                 mGoogleApiClient.connect();
+        }
+
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected() == false) {
+            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+            if (prefs.getBoolean("initial_run", true)) {
+                new ConfirmationDialog().show(getSupportFragmentManager(), "InitialRunDialog");
+
+                final SharedPreferences.Editor editor = prefs.edit();
+                editor.putBoolean("initial_run", false);
+                editor.commit();
+            }
         }
     }
 
@@ -133,7 +134,7 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
         @Override
         protected void onPostExecute(Void unused) {
 
-            setTitle("r/".concat(mSubreddit.toLowerCase()));
+            setTitle("r/".concat(mSubreddit));
 
             final PostListRecyclerViewAdapter adapter = new PostListRecyclerViewAdapter(mPosts, mGoogleApiClient, mSubreddit, getApplicationContext());
             mRecyclerView.setAdapter(adapter);
@@ -171,9 +172,9 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
         final String json = Utilities.GetRemoteJSON("http://www.reddit.com/r/".concat(mSubreddit).concat("/.json"));
 
         try {
-            JSONObject response = new JSONObject(json);
-            JSONObject data = response.getJSONObject("data");
-            JSONArray posts = data.getJSONArray("children");
+            final JSONObject response = new JSONObject(json);
+            final JSONObject data = response.getJSONObject("data");
+            final JSONArray posts = data.getJSONArray("children");
             final int length = posts.length();
 
             for (int i = 0; i < length; i++) {
@@ -193,27 +194,33 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
     }
 
     private Void GetRandomSubreddit() {
-        String json = Utilities.GetRemoteJSON(getString(R.string.url_random));
+        final String json = Utilities.GetRemoteJSON(getString(R.string.url_random));
 
         JSONObject obj;
 
         try {
             obj = new JSONObject(json);
-            JSONObject data1 = (JSONObject) obj.get("data");
+            final JSONObject data1 = (JSONObject) obj.get("data");
 
-            JSONArray children = (JSONArray) data1.get("children");
+            final JSONArray children = (JSONArray) data1.get("children");
 
-            JSONObject jsonObject = (JSONObject) children.get(0);
-            JSONObject data2 = (JSONObject) jsonObject.get("data");
+            final JSONObject jsonObject = (JSONObject) children.get(0);
+            final JSONObject data2 = (JSONObject) jsonObject.get("data");
 
-            mSubreddit = data2.getString("subreddit");
+            mSubreddit = data2.getString("subreddit").toLowerCase();
 
             if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
                 if (data2.getBoolean("over_18")) {
                     Games.Achievements.increment(mGoogleApiClient, getString(R.string.achievement_nsfw), 1);
                 }
 
-                if (mSubreddit.length() > 4 && mSubreddit.substring(mSubreddit.length() - 4, mSubreddit.length()).toLowerCase().equals("porn"))
+                if (Utilities.ArrayContains(getResources().getStringArray(R.array.subreddits_android), mSubreddit))
+                    Games.Achievements.increment(mGoogleApiClient, getString(R.string.achievement_android_fanboy), 1);
+
+                if (Utilities.ArrayContains(getResources().getStringArray(R.array.subreddits_apple), mSubreddit))
+                    Games.Achievements.increment(mGoogleApiClient, getString(R.string.achievement_apple_fanboy), 1);
+
+                if (mSubreddit.length() > 4 && mSubreddit.substring(mSubreddit.length() - 4, mSubreddit.length()).equals("porn"))
                     Games.Achievements.increment(mGoogleApiClient, getString(R.string.achievement_sfw), 1);
             }
 
@@ -288,7 +295,7 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
         int id = item.getItemId();
 
         if (id == R.id.action_open_reddit) {
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.reddit.com/r/".concat(mSubreddit.toLowerCase()))));
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.reddit.com/r/".concat(mSubreddit))));
             return true;
         }
 
