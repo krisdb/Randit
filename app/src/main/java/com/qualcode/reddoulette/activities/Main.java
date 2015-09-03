@@ -81,14 +81,8 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
     @Override
     protected void onStart() {
         super.onStart();
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         if (mGoogleApiClient != null && !mInSignInFlow && !mExplicitSignOut) {
-            // auto sign in
-            if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("signedout", false) == false)
-                mGoogleApiClient.connect();
-        }
-
-        if (mGoogleApiClient != null && mGoogleApiClient.isConnected() == false) {
-            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
             if (prefs.getBoolean("initial_run", true)) {
                 new ConfirmationDialog().show(getSupportFragmentManager(), "InitialRunDialog");
@@ -97,6 +91,8 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
                 editor.putBoolean("initial_run", false);
                 editor.commit();
             }
+            else if (prefs.getBoolean("signedout", false) == false && prefs.getBoolean("login_enabled", false))
+                mGoogleApiClient.connect();
         }
     }
 
@@ -272,11 +268,7 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
             else
                 BaseGameUtils.showActivityResultError(this, requestCode, resultCode, R.string.signin_failure);
         }
-
-        if (mSwipeRefreshLayout.isRefreshing())
-            mSwipeRefreshLayout.setRefreshing(false);
     }
-
 
     @Override
     public void onConnected(Bundle connectionHint) {
@@ -335,19 +327,24 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
+            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            final SharedPreferences.Editor editor = prefs.edit();
 
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setMessage("Do you want to login for achievements?").setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            builder.setMessage(getString(R.string.dialog_initialrun)).setPositiveButton("YES", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     mGoogleApiClient.connect();
+                    editor.putBoolean("login_enabled", true);
                 }
             }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
+                    editor.putBoolean("login_enabled", false);
                 }
             });
 
+            editor.commit();
             AlertDialog dialog = builder.create();
 
             return dialog;
@@ -359,6 +356,7 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         final SharedPreferences.Editor editor = prefs.edit();
         editor.putBoolean("signedout", true);
+        editor.putBoolean("login_enabled", false);
         editor.commit();
 
         Games.signOut(mGoogleApiClient);
@@ -373,6 +371,7 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         final SharedPreferences.Editor editor = prefs.edit();
         editor.putBoolean("signedout", false);
+        editor.putBoolean("login_enabled", true);
         editor.commit();
 
         mGoogleApiClient.connect();

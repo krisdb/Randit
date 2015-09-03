@@ -146,9 +146,11 @@ public class Details extends AppCompatActivity implements GoogleApiClient.Connec
     @Override
     protected void onStart() {
         super.onStart();
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
         if (mGoogleApiClient != null && !mInSignInFlow && !mExplicitSignOut) {
             // auto sign in
-            if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("signedout", false) == false)
+            if (prefs.getBoolean("signedout", false) == false && prefs.getBoolean("login_enabled", false))
                 mGoogleApiClient.connect();
         }
     }
@@ -226,6 +228,7 @@ public class Details extends AppCompatActivity implements GoogleApiClient.Connec
 
         @Override
         protected void onPostExecute(Void ununsed) {
+            Boolean test = mGoogleApiClient.isConnected();
 
             if (mObjects.size() > 0) {
                 final DetailListRecyclerViewAdapter adapter = new DetailListRecyclerViewAdapter(mObjects);
