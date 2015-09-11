@@ -58,7 +58,6 @@ public class Details extends AppCompatActivity implements GoogleApiClient.Connec
         mRecyclerView = (RecyclerView)findViewById(R.id.commentlist);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(this));
-        mRecyclerView.setAdapter(new DetailListRecyclerViewAdapter());
 
         mUrl = getIntent().getExtras().getString("permalink");
         setTitle("r/".concat((getIntent().getExtras().getString("subreddit"))));
@@ -241,13 +240,13 @@ public class Details extends AppCompatActivity implements GoogleApiClient.Connec
             }
     }
 
-    private void Share()
+    private void SharePost()
     {
         final Intent sharingIntent = new Intent(Intent.ACTION_SEND);
         sharingIntent.setType("text/plain");
 
         sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, mObjects.get(0).getPost().getTitle());
-        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, "http://www.reddit.com".concat(mUrl));
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, mUrl);
 
         startActivity(Intent.createChooser(sharingIntent, "Share"));
     }
@@ -268,8 +267,8 @@ public class Details extends AppCompatActivity implements GoogleApiClient.Connec
             return true;
         }
 
-        if (id == R.id.action_share) {
-            Share();
+        if (id == R.id.action_share_post) {
+            SharePost();
             return true;
         }
 

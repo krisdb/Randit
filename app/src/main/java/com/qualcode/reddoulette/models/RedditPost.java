@@ -5,7 +5,7 @@ import java.util.List;
 
 public final class RedditPost {
 
-	public String url, permalink, title, author, domain, text, displayDate;
+	public String url, permalink, title, author, domain, text, displayDate, subtitle;
 	public int score, totalComments;
 	public Date postDate;
 	public List<RedditComment> comments;
@@ -19,6 +19,16 @@ public final class RedditPost {
 		this.score = score;
 		this.postDate = postDate;
 		this.displayDate = displayDate;
+	}
+
+	public void setSubtitle(String subtitle)
+	{
+		this.subtitle = subtitle;
+	}
+
+	public String getSubtitle()
+	{
+		return subtitle;
 	}
 
 	public int getCommentTotal()
@@ -130,5 +140,4 @@ public final class RedditPost {
 	{
 		return displayDate;
 	}
-
 }

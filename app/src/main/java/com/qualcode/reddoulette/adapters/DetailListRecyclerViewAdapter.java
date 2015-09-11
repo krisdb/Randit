@@ -29,6 +29,7 @@ public class DetailListRecyclerViewAdapter extends RecyclerView.Adapter<Recycler
 
     public DetailListRecyclerViewAdapter()
     {
+        mObjects = new ArrayList<>();
     }
 
     public DetailListRecyclerViewAdapter(List<RedditObject> objects) {

@@ -1,0 +1,62 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/post_header_layout"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp"
+    android:background="#bbb"
+    >
+
+    <TextView
+        android:id="@+id/subreddit_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:paddingBottom="5dp"
+        android:visibility="gone"
+        />
+
+    <TextView
+        android:text=" - "
+        android:id="@+id/subreddit_title_separator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@id/subreddit_title"
+        android:visibility="gone"
+        />
+
+    <TextView
+        android:id="@+id/subreddit_subtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:paddingBottom="5dp"
+        android:layout_toRightOf="@id/subreddit_title_separator"
+        />
+
+
+    <TextView
+        android:id="@+id/subreddit_subcribers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/subreddit_subtitle"
+        android:textStyle="bold"
+        />
+
+    <TextView
+        android:text=" subscribers"
+        android:id="@+id/pts"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/subreddit_subtitle"
+        android:layout_toRightOf="@id/subreddit_subcribers"
+        />
+
+</RelativeLayout>

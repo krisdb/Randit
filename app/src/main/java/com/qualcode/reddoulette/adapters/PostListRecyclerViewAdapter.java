@@ -22,117 +22,128 @@ import com.google.android.gms.games.Games;
 import com.qualcode.reddoulette.R;
 import com.qualcode.reddoulette.activities.Details;
 import com.qualcode.reddoulette.models.RedditPost;
+import com.qualcode.reddoulette.models.SubredditObject;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
-public class PostListRecyclerViewAdapter extends RecyclerView.Adapter<PostListRecyclerViewAdapter.PostListViewHolder> {
+public class PostListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private List<RedditPost> mPosts;
+    private List<SubredditObject> mSubreddit;
     private GoogleApiClient mGoogleApiClient;
     private Context mContext;
-    private String mSubreddit;
 
-    public PostListRecyclerViewAdapter() {
-        mPosts = new ArrayList<>();
-    }
 
-    public PostListRecyclerViewAdapter(List<RedditPost> posts, GoogleApiClient api, String subreddit, Context ctx) {
-        mPosts = posts;
+    public PostListRecyclerViewAdapter(List<SubredditObject> subreddit, GoogleApiClient api, Context ctx) {
+        mSubreddit = subreddit;
         mGoogleApiClient = api;
         mContext = ctx;
-        mSubreddit = subreddit;
     }
 
+    private class VIEW_TYPES {
+        public static final int Header = 0;
+        public static final int Normal = 1;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if(position == 0) {
+            return VIEW_TYPES.Header;
+        }
+        else {
+            return VIEW_TYPES.Normal;
+        }
+    }
     @Override
     public int getItemCount() {
-        return mPosts.size();
+        return mSubreddit != null ? mSubreddit.get(1).getPosts().size() + 1 : 0;
+    }
+
+
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, final int i) {
+
+        switch (i)
+        {
+            case VIEW_TYPES.Header:
+                return new PostListHeaderViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.postlist_header, viewGroup, false));
+            case VIEW_TYPES.Normal:
+                return new PostListViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.postlist_item, viewGroup, false));
+            default:
+                return new PostListViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.postlist_item, viewGroup, false));
+        }
     }
 
     @Override
-    public PostListViewHolder onCreateViewHolder(ViewGroup viewGroup, final int i) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int i) {
 
-        final View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.postlist_item, viewGroup, false);
-
-        /*
-        v.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                final Intent details = new Intent(v.getContext(), Details.class);
-
-                final Bundle bun = new Bundle();
-                bun.putString("permalink", mPosts.get(mRecyclerView.getChildAdapterPosition(v)).getPermaLink());
-                details.putExtras(bun);
-
-                v.getContext().startActivity(details);
-            }
-        });
-        */
-        return new PostListViewHolder(v);
-    }
-
-    @Override
-    public void onBindViewHolder(PostListViewHolder personViewHolder, final int i) {
-        final RedditPost post = mPosts.get(i);
-        personViewHolder.title.setText(post.getTitle());
-        personViewHolder.score.setText(String.valueOf(post.getScore()));
-        personViewHolder.displayDate.setText(post.getDisplayDate());
-        personViewHolder.author.setText(post.getAuthor());
-        personViewHolder.totalComments.setText(String.valueOf(post.getCommentTotal()));
-        personViewHolder.domain.setText(post.getDomain());
-
-        personViewHolder.commentsLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SelfIntent(v, i);
-                RecordAchievement(mPosts.get(i));
-            }
-        });
-
-        if (post.IsSticky())
-        {
-            int darkGreen = Color.parseColor("#006400");
-            personViewHolder.title.setTextColor(darkGreen);
-            personViewHolder.title.setTextColor(darkGreen);
-            personViewHolder.score.setTextColor(darkGreen);
-            personViewHolder.displayDate.setTextColor(darkGreen);
-            personViewHolder.author.setTextColor(darkGreen);
-            personViewHolder.domain.setTextColor(darkGreen);
-            personViewHolder.pts.setTextColor(darkGreen);
-            personViewHolder.by.setTextColor(darkGreen);
+        if (holder instanceof PostListHeaderViewHolder) {
+            ((PostListHeaderViewHolder)holder).title.setText((mSubreddit.get(0).getTitle()));
+            ((PostListHeaderViewHolder)holder).subtitle.setText((mSubreddit.get(0).getSubtitle()));
+            ((PostListHeaderViewHolder)holder).subscribers.setText((NumberFormat.getNumberInstance(Locale.US).format(mSubreddit.get(0).getSubscribers())));
         }
-        else
-        {
-            personViewHolder.postLayout.setBackgroundColor(Color.parseColor("#eeeeee"));
-            personViewHolder.title.setTextColor(Color.DKGRAY);
-            personViewHolder.title.setTextColor(Color.DKGRAY);
-            personViewHolder.score.setTextColor(Color.DKGRAY);
-            personViewHolder.displayDate.setTextColor(Color.DKGRAY);
-            personViewHolder.author.setTextColor(Color.DKGRAY);
-            personViewHolder.domain.setTextColor(Color.DKGRAY);
-            personViewHolder.pts.setTextColor(Color.DKGRAY);
-            personViewHolder.by.setTextColor(Color.DKGRAY);
-        }
+        else {
+            final RedditPost post = mSubreddit.get(1).getPosts().get(i - 1);
 
-        if (post.IsSelf()) {
-            personViewHolder.postLayout.setOnClickListener(new View.OnClickListener() {
+            final PostListViewHolder postHolder = (PostListViewHolder)holder;
+
+            postHolder.title.setText(post.getTitle());
+            postHolder.score.setText(String.valueOf(post.getScore()));
+            postHolder.displayDate.setText(post.getDisplayDate());
+            postHolder.author.setText(post.getAuthor());
+            postHolder.totalComments.setText(String.valueOf(post.getCommentTotal()));
+            postHolder.domain.setText(post.getDomain());
+
+            postHolder.commentsLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     SelfIntent(v, i);
-                    RecordAchievement(mPosts.get(i));
+                    RecordAchievement(post);
                 }
             });
-        }
-        else {
-            personViewHolder.postLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    v.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(mPosts.get(i).getUrl())));
-                    RecordAchievement(mPosts.get(i));
-                }
-            });
-            //personViewHolder.domain.setVisibility(View.GONE);
+
+            if (post.IsSticky()) {
+                int darkGreen = Color.parseColor("#006400");
+                postHolder.title.setTextColor(darkGreen);
+                postHolder.title.setTextColor(darkGreen);
+                postHolder.score.setTextColor(darkGreen);
+                postHolder.displayDate.setTextColor(darkGreen);
+                postHolder.author.setTextColor(darkGreen);
+                postHolder.domain.setTextColor(darkGreen);
+                postHolder.pts.setTextColor(darkGreen);
+                postHolder.by.setTextColor(darkGreen);
+            } else {
+                postHolder.postLayout.setBackgroundColor(Color.parseColor("#eeeeee"));
+                postHolder.title.setTextColor(Color.DKGRAY);
+                postHolder.title.setTextColor(Color.DKGRAY);
+                postHolder.score.setTextColor(Color.DKGRAY);
+                postHolder.displayDate.setTextColor(Color.DKGRAY);
+                postHolder.author.setTextColor(Color.DKGRAY);
+                postHolder.domain.setTextColor(Color.DKGRAY);
+                postHolder.pts.setTextColor(Color.DKGRAY);
+                postHolder.by.setTextColor(Color.DKGRAY);
+            }
+
+            if (post.IsSelf()) {
+                postHolder.postLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        SelfIntent(v, i);
+                        RecordAchievement(post);
+                    }
+                });
+            } else {
+                postHolder.postLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        v.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(post.getUrl())));
+                        RecordAchievement(post );
+                    }
+                });
+                //personViewHolder.domain.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -158,7 +169,6 @@ public class PostListRecyclerViewAdapter extends RecyclerView.Adapter<PostListRe
 
             Games.Leaderboards.submitScore(mGoogleApiClient, mContext.getString(R.string.leaderboard_most_posts_viewed), totalViews);
         }
-
     }
 
     private void SelfIntent(final View v, final int i)
@@ -166,9 +176,9 @@ public class PostListRecyclerViewAdapter extends RecyclerView.Adapter<PostListRe
         final Intent details = new Intent(v.getContext(), Details.class);
 
         final Bundle bun = new Bundle();
-        bun.putString("permalink", mPosts.get(i).getPermaLink());
-        bun.putBoolean("sticky", mPosts.get(i).IsSticky());
-        bun.putString("subreddit", mSubreddit);
+        bun.putString("permalink", mSubreddit.get(1).getPosts().get(i).getPermaLink());
+        bun.putBoolean("sticky", mSubreddit.get(1).getPosts().get(i).IsSticky());
+        bun.putString("subreddit", mSubreddit.get(0).getTitle());
         details.putExtras(bun);
 
         v.getContext().startActivity(details);
@@ -177,6 +187,17 @@ public class PostListRecyclerViewAdapter extends RecyclerView.Adapter<PostListRe
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
+    }
+
+    public class PostListHeaderViewHolder extends RecyclerView.ViewHolder {
+        TextView title, subtitle, subscribers;
+
+        PostListHeaderViewHolder(View itemView) {
+            super(itemView);
+            title = (TextView)itemView.findViewById(R.id.subreddit_title);
+            subtitle = (TextView)itemView.findViewById(R.id.subreddit_subtitle);
+            subscribers = (TextView)itemView.findViewById(R.id.subreddit_subcribers);
+        }
     }
 
     public class PostListViewHolder extends RecyclerView.ViewHolder {
