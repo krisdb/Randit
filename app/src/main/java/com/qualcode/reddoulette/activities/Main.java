@@ -139,7 +139,7 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
                 return;
             }
 
-            setTitle("r/".concat(mSubreddit.get(0).getTitle()));
+            setTitle("r/".concat(mSubreddit.get(0).getName()));
 
             final PostListRecyclerViewAdapter adapter = new PostListRecyclerViewAdapter(mSubreddit, mGoogleApiClient, getApplicationContext());
             mRecyclerView.setAdapter(adapter);
@@ -222,7 +222,7 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
             SubredditObject so = new SubredditObject();
             so.setName(subreddit);
             so.setTitle(data.getString("display_name"));
-            so.setSubtitle(data.getString("title").toLowerCase());
+            so.setSubtitle(data.getString("title"));
             so.setSubscribers(data.getInt("subscribers"));
 
             mSubreddit.add(so);

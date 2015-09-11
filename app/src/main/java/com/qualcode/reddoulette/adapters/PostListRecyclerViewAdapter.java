@@ -176,9 +176,9 @@ public class PostListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
         final Intent details = new Intent(v.getContext(), Details.class);
 
         final Bundle bun = new Bundle();
-        bun.putString("permalink", mSubreddit.get(1).getPosts().get(i).getPermaLink());
-        bun.putBoolean("sticky", mSubreddit.get(1).getPosts().get(i).IsSticky());
-        bun.putString("subreddit", mSubreddit.get(0).getTitle());
+        bun.putString("permalink", mSubreddit.get(1).getPosts().get(i - 1).getPermaLink());
+        bun.putBoolean("sticky", mSubreddit.get(1).getPosts().get(i - 1).IsSticky());
+        bun.putString("subreddit", mSubreddit.get(0).getName());
         details.putExtras(bun);
 
         v.getContext().startActivity(details);
