@@ -2,9 +2,12 @@
     <string name="app_name">Reddoulette</string>
 
     <string name="url_random">http://www.reddit.com/r/random/.json</string>
+    <string name="url_playstore">https://play.google.com/store/apps/details?id=com.qualcode.reddoulette</string>
 
     <string name="error_subreddit">Unable to retrieve a random subreddit. Please try again</string>
 
+    <string name="action_nsfw">Show NSFW</string>
+    <string name="action_rate">Rate App</string>
     <string name="action_share_app">Share App</string>
     <string name="action_share_post">Share Post</string>
     <string name="action_open_reddit">View in Reddit</string>

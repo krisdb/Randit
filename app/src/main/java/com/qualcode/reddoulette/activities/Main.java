@@ -48,6 +48,7 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
     private boolean mSignInClicked = false;
     private boolean mExplicitSignOut = false;
     private boolean mInSignInFlow = false;
+    private AsyncTask<Void, Void, Void>  mTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,7 +104,8 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
 
     private void refreshContent() {
         mSubreddit = new ArrayList<>();
-        new GetPosts(this).execute();
+        mTask = new GetPosts(this);
+        mTask.execute();
     }
 
 
@@ -130,6 +132,8 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
 
         @Override
         protected void onPostExecute(Void unused) {
+
+            invalidateOptionsMenu();
 
             if (mSubreddit == null || mSubreddit.size() == 0)
             {
@@ -187,8 +191,12 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
             SubredditObject so = new SubredditObject();
             final List<RedditPost> posts = new ArrayList<>();
 
+            final Boolean showNSFW = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("show_nsfw", false);
+
             for (int i = 0; i < length; i++) {
                 JSONObject post = postsData.getJSONObject(i).getJSONObject("data");
+
+                if (post.getBoolean("over_18") && showNSFW == false) continue;
 
                 RedditPost rp = Utilities.GetPost(post);
                 rp.isSelf = post.getBoolean("is_self");
@@ -252,6 +260,12 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
 
             if (subreddit == null || subreddit.length() == 0) return null;
 
+            if (data2.getBoolean("over_18") && PreferenceManager.getDefaultSharedPreferences(this).getBoolean("show_nsfw", false) == false)
+            {
+                mTask.cancel(true);
+                refreshContent();
+            }
+
             if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
                 if (data2.getBoolean("over_18")) {
                     Games.Achievements.increment(mGoogleApiClient, getString(R.string.achievement_nsfw), 1);
@@ -276,14 +290,6 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
         return null;
     }
 
-    @Override
-    public boolean onPrepareOptionsMenu (Menu menu) {
-        menu.getItem(2).setVisible(mGoogleApiClient.isConnected() == false); //sign in
-        menu.getItem(3).setVisible(mGoogleApiClient.isConnected()); //leaderboard
-        menu.getItem(4).setVisible(mGoogleApiClient.isConnected()); //achievements
-        menu.getItem(5).setVisible(mGoogleApiClient.isConnected()); //sign out
-        return true;
-    }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
@@ -330,6 +336,19 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
         return true;
     }
 
+
+    @Override
+    public boolean onPrepareOptionsMenu (Menu menu) {
+        menu.getItem(1).setVisible(mSubreddit != null && mSubreddit.size() > 0); //view in reddit
+        menu.getItem(2).setVisible(mGoogleApiClient.isConnected() == false); //sign in
+        menu.getItem(3).setVisible(mGoogleApiClient.isConnected()); //leaderboard
+        menu.getItem(4).setVisible(mGoogleApiClient.isConnected()); //achievements
+        menu.getItem(5).setVisible(mGoogleApiClient.isConnected()); //sign out
+        menu.getItem(8).setChecked(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("show_nsfw", false));
+
+        return true;
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
@@ -371,6 +390,19 @@ public class Main extends AppCompatActivity implements GoogleApiClient.Connectio
 
         if (id == R.id.action_share_app) {
             ShareApp();
+            return true;
+        }
+
+        if (id == R.id.action_rate) {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.url_playstore))));
+            return true;
+        }
+
+        if (id == R.id.action_nsfw) {
+            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            final SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean("show_nsfw", item.isChecked() ? false : true);
+            editor.commit();
             return true;
         }
 
